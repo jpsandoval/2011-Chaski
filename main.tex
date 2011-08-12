@@ -189,11 +189,11 @@ Department of Computer Science (DCC)\\ University of Chile, Santiago, Chile\\[1 
 %	What's the surprising idea?
 %	What's the consequence?
 
-Understanding the behavior of software is one essential task of the software life cycle, especially when maintenance \chg{is done to it}{activities have to be performed}. One has to analyze the code, the documentation or any other device before making any changes therefore it becomes a difficult task and time consuming.
+Understanding the behavior of software is one essential task of the software life cycle, especially when maintenance activities have to be performed. One has to analyze the code, the documentation or any other device before making any changes therefore it becomes a difficult task and time consuming.
 
-Our goal is to show a visualization that represents the interaction of objects involved in the execution which can help developers gain a better understanding \ins{of the software execution}\del{, but}\ins{.} \chg{t}{T}he large number of objects involved in execution represents a major challenge\del{ (Chaski)}.
+Our goal is to show a visualization that represents the interaction of objects involved in the execution which can help developers gain a better understanding of the software execution. The large number of objects involved in execution represents a major challenge.
 
-Chaski is a tool \del{created} to \chg{take this challenge}{address this problem of understanding} by visualizing the execution of an object oriented program\chg{,}{.} \ins{Execution blueprint} \chg{showing}{shows} the interaction between objects through messages exchanged between them, in the order they occur. \ab{Say more about the visualization}. This visualization helps to: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relations, among others.
+Chaski is a tool to address this problem of understanding by visualizing the execution of an object oriented program. Execution blueprint shows the interaction between objects through messages exchanged between them, in the order they occur. \ab{Say more about the visualization}. This visualization helps to: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relations, among others.
 
 
 \end{abstract}
@@ -217,36 +217,50 @@ The purpose of this visualization is to help: understand the current behavior of
 
 \ab{In this section you already go into details. This has to come afterwards. Start with a cool visualization and says you see in the visualization. Subsequent sections will then go into details.}
 
-\paragraph{Layout}
-The essence of chaski are the messages and the chronological order in which these (messages) occur. \ab{We are not talking about Chaski here. Chaski has to be mentioned in the implementation. We need to talk about execution blueprint, the visualization given by Chaski.}
+In this section we'll discuss the visualization shown in Figure 1.
+
+(Example figure 1)
+view := MOViewRenderer new.
+profile := (Chaski profile: [
+	view nodes: (1 to: 4).
+	] inPackagesMatching: 'Mondrian-*').
 
 \ab{Give an example of a cool visualization}
-\fig{}{0.7}{Chaski22}{What a cool example!}
-
-The large-scale sequence of messages makes the screen resolution not enough to show a lot of information,causing the emergence of scrolls that make the graphics difficult to understand\ab{This is an important point, but this has to come later on in the paper. Maybe in the discussion session}.
-
-The layout of chaski allows the user to group the messages by different criteria, such as per package, class, object, method with blue, red, yellow and green colors, respectively, or a combination of these but respecting the hierarchy.
-
-\paragraph{Coloreando mensajes}
-To help mark or highlight the messages you want to analyze, chaski provides a simple mechanism of colored rules of messages, it allows to color a message given a particular criterion. If you have multiple criteria and, in the case that one or more messages meet more than one criterion, these will take the color of the last criterion.
-
-\paragraph{Aplicando filtros}
-\ab{Move this paragraph into the scalability section} So like a lot of objects are created when executing an object-oriented program,  so much larger the number of messages that are sent between objects, making the visualization extremely large. The filters in chaski try to display messages that meet a certain condition allowing a smaller view and most importantly, making  possible to analyze only the messages that interest us.
-
-Dependencia de mensajes.
+\fig{}{0.7}{ChaskiPreview7}{What a cool example!}
 
 
-Secuencia de mensajes.
+In the visualization we can distinguish two types of components; the classifiers: package, class, object which are identified by the colors blue, red, yellow, respectively; and the messages that have a default gray color, the color of the messages can also be determined by any particular criterion, for example, in Figure 1. you can see that messages were colored with magenta. Finally, it is necessary to clarify that the messages are vertically aligned at the same y-axis of the receptor component of the message (in the example at the height of the receptor object of the message???), and are placed horizontally one after another in the order they were invoked.
+
+Another important point in the visualization is the relationship between messages, which is determined by the axes (edges) that join two messages. In the case of Figure 1. the union of 2 posts would mean that most left message invoked to right message.
+
+To help mark or highlight the messages you want to analyze, chaski provides a simple mechanism of colored rules of messages, it allows to color a message given a particular criterion. If you have multiple criteria and, in the case that one or more messages meet more than one criterion, these will take the color of the last criterion. In the case of Figure 1 we use this criteria to set a color in some messages.
+
+    "ifMessage:[  :aMessage  | aMessage method selector='initialize'] fillColor: Color magenta."
+
+(no se como unir :P)
+In Figure 1 we can easily detect which object is the one that receives more messages, which object needs to communicate with objects from other packages, which objects are instantiated at runtime (magenta messages) and how many instances of a particular class participate in the execution.
 
 %=========
 \subsection{Layout}
-\ab{Move the paragraph layout in this new subsection}
+
+The essence of "layout" are the messages and the chronological order in which these (messages) occur. y agruparlos por paquete,clase y objeto en ese orden o cualquiera de estos otros([paquete], [clase], [objeto], [paquete,clase], [paquete,objeto], [paquete,clase,objeto]).
+
+While the messages are sorted horizontally in chronological order, the other components (package, class, object) are sorted by number of posts referred to, (siendo que el elemento que invoque mas mensajes estara al mas arriba ) <- esto tiene que mejorarse.
+
+The relationships between messages is an important factor (edges), the layout offers 2 types of relationships
+     . Dependency messages.- where a message is related to the message from which it was invoked.
+     . Sequence between messages.- where a message is simply associated with another in the order they were executed.
+
+Si bien la relacion de dependencia es importante para analisar el acoplamiento de paquetes o de clases y identificar patrones en la ejecucion,... falta XD
+
+\ab{We are not talking about Chaski here. Chaski has to be mentioned in the implementation. We need to talk about execution blueprint, the visualization given by Chaski.}
+
+\ab{Give an example of a cool visualization}
+\fig{}{0.7}{ChaskiPreview5}{What a cool example!}
 
 %=========
 \subsection{Patterns}
-
 \ab{Tell about the patterns you have showed me}
-
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Case Study}\seclabel{case study}
@@ -260,10 +274,12 @@ Secuencia de mensajes.
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Managing the scalability}\seclabel{scalability}
 
+So like a lot of objects are created when executing an object-oriented program,  so much larger the number of messages that are sent between objects, making the visualization extremely large. The filters in chaski try to display messages that meet a certain condition allowing a smaller view and most importantly, making  possible to analyze only the messages that interest us.
+
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Discussion}\seclabel{discussion}
-
+The large-scale sequence of messages makes the screen resolution not enough to show a lot of information,causing the emergence of scrolls that make the graphics difficult to understand\ab{This is an important point, but this has to come later on in the paper. Maybe in the discussion session}.
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Implementation}\seclabel{implementation}
