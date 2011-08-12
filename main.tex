@@ -219,6 +219,7 @@ The purpose of this visualization is to help: understand the current behavior of
 
 In this section we'll discuss the visualization shown in Figure 1.
 
+\ab{Script is not necessary. A clear description of the visualization is more important}
 (Example figure 1)
 view := MOViewRenderer new.
 profile := (Chaski profile: [
@@ -226,12 +227,12 @@ profile := (Chaski profile: [
 	] inPackagesMatching: 'Mondrian-*').
 
 \ab{Give an example of a cool visualization}
-\fig{}{0.7}{ChaskiPreview7}{What a cool example!}
+\largefig{}{0.7}{ChaskiPreview7}{\ab{Give a better title! Put some letter in the figure and refer to them in the text}}
 
 
-In the visualization we can distinguish two types of components; the classifiers: package, class, object which are identified by the colors blue, red, yellow, respectively; and the messages that have a default gray color, the color of the messages can also be determined by any particular criterion, for example, in Figure 1. you can see that messages were colored with magenta. Finally, it is necessary to clarify that the messages are vertically aligned at the same y-axis of the receptor component of the message (in the example at the height of the receptor object of the message???), and are placed horizontally one after another in the order they were invoked.
+In the visualization we can distinguish two types of components; the classifiers: package, class, object which are identified by the colors blue, red, yellow, respectively; and the messages that have a default gray color, the color of the messages can also be determined by any particular criterion, for example, in Figure 1. \del{you can see that} \chg{m}{M}essages \chg{were}{are} colored with magenta. \del{Finally, it is necessary to clarify that the }\chg{m}{M}essages are vertically aligned at the same y-axis of the receptor component of the message (in the example at the height of the receptor object of the message???\ab{I do not understand the question}), and are placed horizontally one after another in the order they were invoked.
 
-Another important point in the visualization is the relationship between messages, which is determined by the axes (edges) that join two messages. In the case of Figure 1. the union of 2 posts would mean that most left message invoked to right message.
+\del{Another important point in the visualization is} the relationship between messages\chg{, which is}{are} determined by the axes (edges) that join two messages. In the case of Figure 1. the union of 2 posts would mean that most left message invoked to right message.
 
 To help mark or highlight the messages you want to analyze, chaski provides a simple mechanism of colored rules of messages, it allows to color a message given a particular criterion. If you have multiple criteria and, in the case that one or more messages meet more than one criterion, these will take the color of the last criterion. In the case of Figure 1 we use this criteria to set a color in some messages.
 
@@ -248,15 +249,17 @@ The essence of "layout" are the messages and the chronological order in which th
 While the messages are sorted horizontally in chronological order, the other components (package, class, object) are sorted by number of posts referred to, (siendo que el elemento que invoque mas mensajes estara al mas arriba ) <- esto tiene que mejorarse.
 
 The relationships between messages is an important factor (edges), the layout offers 2 types of relationships
-     . Dependency messages.- where a message is related to the message from which it was invoked.
-     . Sequence between messages.- where a message is simply associated with another in the order they were executed.
+\begin{itemize}
+\item Dependency messages.- where a message is related to the message from which it was invoked.
+\item Sequence between messages.- where a message is simply associated with another in the order they were executed.
+\end{itemize}
 
-Si bien la relacion de dependencia es importante para analisar el acoplamiento de paquetes o de clases y identificar patrones en la ejecucion,... falta XD
+Si bien la relacion de dependencia es importante para analisar el acoplamiento de paquetes o de clases y identificar patrones en la ejecucion,... falta XD \ab{espa\~nol?}
 
 \ab{We are not talking about Chaski here. Chaski has to be mentioned in the implementation. We need to talk about execution blueprint, the visualization given by Chaski.}
 
 \ab{Give an example of a cool visualization}
-\fig{}{0.7}{ChaskiPreview5}{What a cool example!}
+\largefig{}{0.7}{ChaskiPreview5}{\ab{Give a better title! Put some letter in the figure and refer to them in the text}}
 
 %=========
 \subsection{Patterns}
