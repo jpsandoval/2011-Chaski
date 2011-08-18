@@ -228,6 +228,8 @@ The purpose of this visualization is to help: understand the current behavior of
 
 \subsection{In a nutshell}
 
+\ab{Give two sentences that describe what an execution blueprint is. Something like it ``gives the timeline of an application execution...''}\ab{say also that execution blueprint is a postmortem visualization: it is obtained after the program execution}
+
 In this section we'll discuss the visualization shown in Figure 1.
 
 \largefig{}{1.0}{MondrianDependence}{How packages/class interact in the execution? (mondrian)}
@@ -237,17 +239,17 @@ In figure 1 we can distinguish two types of components; the classifiers: package
 
 The visualization shows the interaction between objects, classes and packages (classifiers) through messages sent or received by them, where the messages are vertically aligned with the component receiving the message and placed horizontally in the order in which these messages were received.
 
-The edges are an important factor in allowing the visualization to link two messages, in the case of Figure 1 the axes represent dependency between messages, being the message at the left the one that invokes to the message at the right.
+The edges are an important factor in allowing the visualization to link two messages, in the case of Figure 1 the axes represent \ugh{dependency}\ab{The word ``dependency'' is too vague. Are you talking about invocation between methods?}  between messages, being the message at the left the one that invokes to the message at the right.
 
-All this allows to determine which object is the one that receives more messages, which object needs to communicate with objects from other packages, which objects are instantiated at runtime (magenta messages) and how many instances of a particular class participate in the execution.
+\ab{I think the visualization is more about identifying execution patterns. What do we see in Figure 1?}  All this allows to determine which object is the one that receives more messages, which object needs to communicate with objects from other packages, which objects are instantiated at runtime (magenta messages) and how many instances of a particular class participate in the execution.
 
 %=========
 \subsection{Layout}
-The essence of "layout" are the messages and the chronological order in which these(messages) occur. And provide clasifiers in order to group the messages.As seen in the example in Figure 1. the messages are grouped first by class package and finally by subject, note that some messages are not directly associated with an object but with a class, meaning that the receiver of the message is the same class (a class method).
+The essence of "layout" \ab{in latex, we do not use the character " but ``layout'' instead} are the messages and the chronological order in which \chg{these(messages) occur}{messages are sent}. And provide \chg{clasifiers}{classifiers} in order to group the messages. As seen in the example in Figure 1. the messages are grouped first by class package and finally by subject, note that some messages are not directly associated with an object but with a class, meaning that the receiver of the message is the same class (a class method) \ab{insert a letter on figure 1 that says where this occurs}.
 
 This classification or grouping of posts may vary depending on what one may want to analyze. For example in Figure 3 messages are just grouped simply by object, in order to analyze the dependency between objects.
 
-While the messages are sorted horizontally in chronological order, the other components (package, class, object) are sorted vertically by number of messages that has been sent, in this sense the component that sends more messages are located above.
+While the messages are \chg{sorted horizontally}{horizontally sorted} in \ins{a} chronological order, the other components (package, class, object) are sorted vertically by number of messages that has been sent, in this sense the component that sends more messages are located above.
 
 The relationships between messages is an important factor(edges) in the visualization.We consider two types of relationships between messages.
 
@@ -259,14 +261,14 @@ The relationships between messages is an important factor(edges) in the visualiz
 \subsection{Patterns}
 \jp{ esta seccion se baso en el paper Execution Patterns in Object-Oriented Visualization que esta en el directorio}
 
-Execution BluePrint allows classifying repetitive behavior(patterns) to help the developer to have a better understanding of the behavior of software and to reduce the analysis time of the visualization.
+Execution Blue\chg{P}{p}rint \ab{blueprint is a plain english word, no need to emphasize the ``P''} allows classifying repetitive behavior(patterns) to help the developer to have a better understanding of the behavior of software and to reduce the analysis time of the visualization.
 
 \begin{itemize}
-\item Identity Behavior.- When two or more sections of the visualization have identical behavior(same sequence of messages) and there is a perfect match between objects and messages. Which implies that the messages of each section were transmitted and received by the same objects.
-\item Class Identity Behavior.- When two or more sections of the visualization have identical behavior(same sequence of messages) but the messages of each section	 were sent and received by different instances from the same class.(Figure 2).
+\item Identity Behavior.- When two or more sections of the visualization have identical behavior(same sequence of messages) and there is a perfect match between objects and messages. Which implies that the messages of each section \chg{were}{are} \ab{try to use the present tense} transmitted and received by the same objects.
+\item Class Identity Behavior.- When two or more sections of the visualization have \chg{identical behavior(same sequence of messages)}{the same sequence of messages} but the messages of each section were sent and received by different instances from the same class.(Figure 2).
 \end{itemize}
 
-In fact it is possible to find more patterns but for specific domains. That is the case of figure 3, in which the behavior of the execution of a Test Suite is analyzed. Note that one of the important features of a suite of tests is that they should be independent of each other: the failure of one test should not cause an avalanche of failures of other tests that depend upon it, nor should the order in which the tests are run matter. Performing setUp before each test and tearDown afterwards helps to reinforce this independence.
+In fact it is possible to find more patterns but for specific domains\ab{no need to say that, it does not make the paper stronger. Simply remove the sentence}. That is the case of figure 3\ab{never put hardcoded figure or section reference, use \figref{ChaskiPreview8} instead}, in which the behavior of the execution of a Test Suite is analyzed. Note that one of the important features of a suite of tests is that they should be independent of each other: the failure of one test should not cause an avalanche of failures of other tests that depend upon it, nor should the order in which the tests are run matter. Performing setUp before each test and tearDown afterwards helps to reinforce this independence.
 
 
 \largefig{}{1.0}{ChaskiPreview11}{Finding patterns in the execution (Glamour)}
