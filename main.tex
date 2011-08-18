@@ -121,6 +121,7 @@
 \newcommand{\rev}[2]{\nb{Reviewer #1}{red}{#2}}
 \newcommand{\ab}[1]{\nb{Alexandre}{blue}{#1}}
 \newcommand{\vp}[1]{\nb{Vanessa}{orange}{#1}}
+\newcommand{\jp}[1]{\nb{Juan Pablo}{green}{#1}}
 
 % graphics: \fig{position}{percentage-width}{filename}{caption}
 \DeclareGraphicsExtensions{.png,.jpg,.pdf,.eps,.gif}
@@ -163,6 +164,18 @@
 \newcommand{\figref}[1]{Figure~\ref{fig:#1}}
 \newcommand{\secref}[1]{Section~\ref{sec:#1}}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% adding smalltalk listing %%%%%%%%%%%%%%%%%%%5
+\lstdefinelanguage{Smalltalk}{
+  morekeywords={true,false,self,super,nil},
+  sensitive=true,
+  morecomment=[s]{"}{"},
+  morestring=[d]',
+  style=SmalltalkStyle
+}
+\lstdefinestyle{SmalltalkStyle}{
+  literate={:=}{{$\gets$}}1{^}{{$\uparrow$}}1
+} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% adding smalltalk listing %%%%%%%%%%%%%%%%%%%5
 
 %Specialized macros
 \newcommand{\hapao}{Hapao\xspace}
@@ -215,70 +228,132 @@ The purpose of this visualization is to help: understand the current behavior of
 
 \subsection{In a nutshell}
 
-\ab{In this section you already go into details. This has to come afterwards. Start with a cool visualization and says you see in the visualization. Subsequent sections will then go into details.}
-
 In this section we'll discuss the visualization shown in Figure 1.
 
-\ab{Script is not necessary. A clear description of the visualization is more important}
-(Example figure 1)
-view := MOViewRenderer new.
-profile := (Chaski profile: [
-	view nodes: (1 to: 4).
-	] inPackagesMatching: 'Mondrian-*').
-
-\ab{Give an example of a cool visualization}
-\largefig{}{0.7}{ChaskiPreview7}{\ab{Give a better title! Put some letter in the figure and refer to them in the text}}
+\largefig{}{1.0}{MondrianDependence}{How packages/class interact in the execution? (mondrian)}
 
 
-In the visualization we can distinguish two types of components; the classifiers: package, class, object which are identified by the colors blue, red, yellow, respectively; and the messages that have a default gray color, the color of the messages can also be determined by any particular criterion, for example, in Figure 1. \del{you can see that} \chg{m}{M}essages \chg{were}{are} colored with magenta. \del{Finally, it is necessary to clarify that the }\chg{m}{M}essages are vertically aligned at the same y-axis of the receptor component of the message (in the example at the height of the receptor object of the message???\ab{I do not understand the question}), and are placed horizontally one after another in the order they were invoked.
+In figure 1 we can distinguish two types of components; the classifiers: package, class, object which are identified by the colors blue, red, yellow  respectively; and the messages, which are shown with a gray color by default. Depending on what we want to analyze in the visualization, we can set different colors to the messages based on a criteria. In the case of Figure 1, the magenta color was established for "initialize" messages.
 
-\del{Another important point in the visualization is} the relationship between messages\chg{, which is}{are} determined by the axes (edges) that join two messages. In the case of Figure 1. the union of 2 posts would mean that most left message invoked to right message.
+The visualization shows the interaction between objects, classes and packages (classifiers) through messages sent or received by them, where the messages are vertically aligned with the component receiving the message and placed horizontally in the order in which these messages were received.
 
-To help mark or highlight the messages you want to analyze, chaski provides a simple mechanism of colored rules of messages, it allows to color a message given a particular criterion. If you have multiple criteria and, in the case that one or more messages meet more than one criterion, these will take the color of the last criterion. In the case of Figure 1 we use this criteria to set a color in some messages.
+The edges are an important factor in allowing the visualization to link two messages, in the case of Figure 1 the axes represent dependency between messages, being the message at the left the one that invokes to the message at the right.
 
-    "ifMessage:[  :aMessage  | aMessage method selector='initialize'] fillColor: Color magenta."
-
-(no se como unir :P)
-In Figure 1 we can easily detect which object is the one that receives more messages, which object needs to communicate with objects from other packages, which objects are instantiated at runtime (magenta messages) and how many instances of a particular class participate in the execution.
+All this allows to determine which object is the one that receives more messages, which object needs to communicate with objects from other packages, which objects are instantiated at runtime (magenta messages) and how many instances of a particular class participate in the execution.
 
 %=========
 \subsection{Layout}
+The essence of "layout" are the messages and the chronological order in which these(messages) occur. And provide clasifiers in order to group the messages.As seen in the example in Figure 1. the messages are grouped first by class package and finally by subject, note that some messages are not directly associated with an object but with a class, meaning that the receiver of the message is the same class (a class method).
 
-The essence of "layout" are the messages and the chronological order in which these (messages) occur. y agruparlos por paquete,clase y objeto en ese orden o cualquiera de estos otros([paquete], [clase], [objeto], [paquete,clase], [paquete,objeto], [paquete,clase,objeto]).
+This classification or grouping of posts may vary depending on what one may want to analyze. For example in Figure 3 messages are just grouped simply by object, in order to analyze the dependency between objects.
 
-While the messages are sorted horizontally in chronological order, the other components (package, class, object) are sorted by number of posts referred to, (siendo que el elemento que invoque mas mensajes estara al mas arriba ) <- esto tiene que mejorarse.
+While the messages are sorted horizontally in chronological order, the other components (package, class, object) are sorted vertically by number of messages that has been sent, in this sense the component that sends more messages are located above.
 
-The relationships between messages is an important factor (edges), the layout offers 2 types of relationships
+The relationships between messages is an important factor(edges) in the visualization.We consider two types of relationships between messages.
+
 \begin{itemize}
-\item Dependency messages.- where a message is related to the message from which it was invoked.
-\item Sequence between messages.- where a message is simply associated with another in the order they were executed.
+\item Dependency .- where a message is related to the message from which it was invoked (Figure 1).
+\item Sequence.- where a message is simply associated with another in the order they were executed. (Figure 3).
 \end{itemize}
-
-Si bien la relacion de dependencia es importante para analisar el acoplamiento de paquetes o de clases y identificar patrones en la ejecucion,... falta XD \ab{espa\~nol?}
-
-\ab{We are not talking about Chaski here. Chaski has to be mentioned in the implementation. We need to talk about execution blueprint, the visualization given by Chaski.}
-
-\ab{Give an example of a cool visualization}
-\largefig{}{0.7}{ChaskiPreview5}{\ab{Give a better title! Put some letter in the figure and refer to them in the text}}
-
 %=========
 \subsection{Patterns}
-\ab{Tell about the patterns you have showed me}
+\jp{ esta seccion se baso en el paper Execution Patterns in Object-Oriented Visualization que esta en el directorio}
 
+Execution BluePrint allows classifying repetitive behavior(patterns) to help the developer to have a better understanding of the behavior of software and to reduce the analysis time of the visualization.
+
+\begin{itemize}
+\item Identity Behavior.- When two or more sections of the visualization have identical behavior(same sequence of messages) and there is a perfect match between objects and messages. Which implies that the messages of each section were transmitted and received by the same objects.
+\item Class Identity Behavior.- When two or more sections of the visualization have identical behavior(same sequence of messages) but the messages of each section	 were sent and received by different instances from the same class.(Figure 2).
+\end{itemize}
+
+In fact it is possible to find more patterns but for specific domains. That is the case of figure 3, in which the behavior of the execution of a Test Suite is analyzed. Note that one of the important features of a suite of tests is that they should be independent of each other: the failure of one test should not cause an avalanche of failures of other tests that depend upon it, nor should the order in which the tests are run matter. Performing setUp before each test and tearDown afterwards helps to reinforce this independence.
+
+
+\largefig{}{1.0}{ChaskiPreview11}{Finding patterns in the execution (Glamour)}
+\largefig{}{1.0}{ChaskiPreview8}{Visualizing a Test Suite execution (RBSmallDictionaryTest buildSuite run)}
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Case Study}\seclabel{case study}
 
 \subsection{Mondrian}
 
+We will use Mondrian to demonstrate how " Execution BluePrint" visualization is useful to understand the current behavior of the software and find candidates for refactoring and optimization. To which we will address the visualization for the following code execution (Figure 4):
+\begin{lstlisting}[language=Smalltalk]
+	...
+	view  :=  MOViewRenderer title: 'Mondrian View Renderer'.
+	view nodes: subclasses.
+	view edgesFrom: #superclass.
+	view treeLayout.
+	...
+\end{lstlisting}
+
+
 \subsection{Execution anomalies}
 
+In this section we will examine Figure 4, which groups messages only for package and class. This type of grouping is useful to detect the pattern " Class Behavior Identity" more easily .
+
+In the display you can see the existence of behavior repeated in several places, we  will next analyze the sequence of messages in this box.
+Se encontro al metodo responsable de provocar dicho comportamiento:
+It was found the method responsible for causing this behavior:
+
+\begin{lstlisting}[language=Smalltalk]
+MOShape class>>defaultNodeShapeClass
+		"Return the default node shape class"
+		| classes |
+		classes := (self allSubclasses select: #isDefaultNodeShape).
+		classes ifEmpty: [ self error: 'No default shape class' ].
+		^ classes anyOne.
+\end{lstlisting} 
+
+The method defaultNodeShapeClass has the function to search through a MOShape subclasses one class established by default. Through the method "isDefaultNodeShape" shown below.
+
+\begin{lstlisting}[language=Smalltalk]
+MORectangleShape class>>isDefaultNodeShape
+	^ true
+\end{lstlisting} 
+
+\largefig{}{1.0}{Mondrian1}{Before Improvement}
 \subsection{Improvement}
+
+Based on the above analysis we can deduce that it is not necessary to search twice because it could not be changed or set by default to a subclass of MOShape at runtime. That is, the result of the search will always be the same during the execution.
+
+Therefore, the code was improved using Cache:
+
+\begin{lstlisting}[language=Smalltalk]
+MOShape class>>defaultNodeShapeClass
+	"Return the default node shape class"
+	| classes |
+	"Cache"
+	DefaultNodeShapeClass ifNotNil:[^DefaultNodeShapeClass].
+	classes := (self allSubclasses select: #isDefaultNodeShape).
+	classes ifEmpty: [ self error: 'No default shape class' ].
+	"Cache"
+	^ DefaultNodeShapeClass := classes anyOne.
+\end{lstlisting} 
+
+
+\jp{**No se si poner lo que esta debajo a este comentario , parece mucho detalle}
+And we established a method for removing the Cache:
+\begin{lstlisting}[language=Smalltalk]
+MOShape class>>resetCache
+	DefaultNodeShapeClass :=nil.
+\end{lstlisting} 
+Since it is possible for someone to set some other default MOShape before running the application, the cache is removed before Mondrian carries out any visualization:
+\begin{lstlisting}[language=Smalltalk]
+MOViewRenderer>>initialize
+	MOShape resetCache.
+	...
+\end{lstlisting} 
+After we made these changes, the execution is shown as follows in Figure 5.
+\jp{**}
+
+\largefig{}{1.0}{Mondrian2}{After Improvement}
+
+
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Managing the scalability}\seclabel{scalability}
 
 So like a lot of objects are created when executing an object-oriented program,  so much larger the number of messages that are sent between objects, making the visualization extremely large. The filters in chaski try to display messages that meet a certain condition allowing a smaller view and most importantly, making  possible to analyze only the messages that interest us.
-
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Discussion}\seclabel{discussion}
