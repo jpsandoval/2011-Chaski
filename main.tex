@@ -228,43 +228,43 @@ The purpose of this visualization is to help: understand the current behavior of
 
 \subsection{In a nutshell}
 
-Execution Blueprint is a visualization that represent the timeline of an application execution. It is obtained after to execute the application according to an execution scenario. An execution scenario being an instance of one or more use cases.
+Execution Blueprint is a visualization that represent\ins{s} the timeline of an application execution. It is obtained after to execute the application according to an execution scenario. An execution scenario being an instance of one or more use cases.
 
 \largefig{}{1.0}{MondrianDependence}{How packages/class interact in the execution? (mondrian)}
 
-In Execution Blueprint we can distinguish two types of components; the classifiers: package, class, object which are identified by the colors blue, red, yellow  respectively; and the messages, which are shown with a gray color by default. Depending on what we want to analyze in the visualization, we can set different colors to the messages based on a criteria. In the case of \figref{MondrianDependence}, the magenta color was established for "initialize" messages.
+\chg{In Execution Blueprint we can}{Execution blueprint} distinguish\ins{es} two types of components; the classifiers: package, class, object which are identified by the colors blue, red, yellow  respectively; and the messages, which are shown with a gray color \del{by default}. Depending on what we want to \chg{analyze in the visualization}{use the visualization for}, we can set different colors to the messages based on a criteria. In the case of \figref{MondrianDependence}, the magenta color was established for "initialize" \ab{You should write ``initialize'' and not "initialize". Look at the quotes.} messages\ab{So what we use the visualization for? Explain a bit more this example}.\ab{Maybe we could have a short description of the blueprint. Can you draw a small visualization and what is the source code that produces it? Something small, a bit like in http://hapao.dcc.uchile.cl:8090/pier/system/components/menu/Test-Blueprint} 
 
-The visualization shows the interaction between objects, classes and packages (classifiers) through messages sent or received by them, where the messages are vertically aligned with the component receiving the message and placed horizontally in the order in which these messages were received.
+The visualization shows the interaction between objects, classes and packages (classifiers) through messages sent or received by them, where the messages are vertically aligned with the component receiving the message and placed horizontally in the order in which these messages \chg{were}{are} \ab{use the present tense, and not the past} received\ab{Sentence too long, please shorten it}.
 
-The edges are an important factor in allowing the visualization to link two messages, in the case of Figure 1 the axes represent invocation between methods, being the message at the left the one that invokes to the message at the right.
+The edges are an important \ugh{factor}\ab{an edge is not a factor, it is a graphical element} fact in allowing the visualization to link two messages, in the case of Figure 1 the axes represent invocation between methods, being the message at the left the one that invokes to the message at the right\ab{Sentence too long}.
 
 \ab{I think the visualization is more about identifying execution patterns. What do we see in Figure 1?}  
 
-All this allows to determine which object is the one that receives more messages, which object needs to communicate with objects from other packages, which objects are instantiated at runtime (magenta messages) and how many instances of a particular class participate in the execution.
+All this allows to \ab{never use ``allow to''. You can either use ``allow someone to do'' or ``allow for doing''} determine which object \chg{is the one that receives more messages}{receives the most messages}, which object needs to communicate with objects from other packages, which objects are instantiated at runtime (magenta messages) and how many instances of a particular class participate in the execution.
 
 %=========
 \subsection{Layout}
 
-The essence of ``layout'' are the messages and the chronological order in which messages are receive. And provide classifiers in order to group the messages. As seen in the example in Figure 1. the messages are grouped first by class package and finally by object, note that some messages are not directly associated with an object but with a class, meaning that the receiver of the message is the same class (a class method), this is illustrated in \figref{MondrianDependence} (the letter A).
+The essence of ``layout'' are the messages and the chronological order in which messages are receive\ins{d}. \chg{And provide classifiers in order to group the messages}{The layout orders the messages into group}. As seen in the example in Figure 1. the messages are grouped first by class package and finally by object, note that some messages are not directly associated with an object but with a class, meaning that the receiver of the message is the same class (a class method), this is illustrated in \figref{MondrianDependence} (\del{the letter} A). \ab{I do not understand this. I would like to understand what is the cloud of points near A. What does this mean?}
 
-This classification or grouping of posts may vary depending on what one may want to analyze. For example in \figref{ChaskiPreview8} messages are just grouped simply by object, in order to analyze the dependency between objects.
+This classification or grouping of \ugh{posts} may vary depending on what one may want to analyze. For example in \figref{ChaskiPreview8} messages are just grouped simply by object, in order to analyze the dependency between objects.
 
 While the messages are horizontally sorted in a chronological order, the other components (package, class, object) are sorted vertically by number of messages that has been sent, in this sense the component that sends more messages are located above.
 
 The relationships between messages is an important factor(edges) in the visualization.We consider two types of relationships between messages.
 
 \begin{itemize}
-\item Dependency .- where a message is related to the message from which it was invoked \figref{MondrianDependence}.
+\item Dependency \chg{.-}{--} where a message is related to the message from which it was invoked \ins{(}\figref{MondrianDependence}\ins{)}.
 \item Sequence.- where a message is simply associated with another in the order they were executed \figref{ChaskiPreview8}.
 \end{itemize}
 %=========
 \subsection{Patterns}
 
-Execution Blueprint allows classifying repetitive behavior(patterns) to help the developer to have a better understanding of the behavior of software and to reduce the analysis time of the visualization.
+Execution Blueprint allows classifying \ugh{repetitive}\ab{not only repetitive I have the impression} behavior(patterns) to help the developer to have a better understanding of the behavior of software and to reduce the analysis time of the visualization\ab{Yeah, this is what most of the visualization wants to do. We want to do better actually: identifying some abnormal or singular execution pattern in order to improve the program}.
 
 \begin{itemize}
-\item Identity Behavior.- When two or more sections of the visualization have identical behavior(same sequence of messages) and there is a perfect match between objects and messages. Which implies that the messages of each section are transmitted and received by the same objects.
-\item Class Identity Behavior.- When two or more sections of the visualization have the same sequence of messages but the messages of each section were sent and received by different instances from the same class.(\fifreg{ChaskiPreview11}).
+\item Identity Behavior.- When two or more sections of the visualization have identical behavior(same sequence of messages) and there is a perfect match between objects and messages. Which implies that the messages of each section are transmitted and received by the same objects. \ab{Give example} \ab{What is the possible improvement you can do?}
+\item Class Identity Behavior.- When two or more sections of the visualization have the same sequence of messages but the messages of each section were sent and received by different instances from the same class.(\figref{ChaskiPreview11}). \ab{What is the possible improvement you can do?}
 \end{itemize}
 
 That is the case of \figref{ChaskiPreview8}, in which the behavior of the execution of a Test Suite is analyzed. Note that one of the important features of a suite of tests is that they should be independent of each other: the failure of one test should not cause an avalanche of failures of other tests that depend upon it, nor should the order in which the tests are run matter. Performing setUp before each test and tearDown afterwards helps to reinforce this independence.
@@ -309,10 +309,13 @@ MORectangleShape class>>isDefaultNodeShape
 	^ true
 \end{lstlisting} 
 
+\ab{What is the problem example. I know you said it with the pattern, but you have to say that this problem is serious, big and worth addressing it.}
+
 \largefig{}{1.0}{Mondrian1}{Before Improvement}
+
 \subsection{Improvement}
 
-Based on the above analysis we can deduce that it is not necessary to search twice because it could not be changed or set by default to a subclass of MOShape at runtime. That is, the result of the search will always be the same during the execution.
+Based on the above analysis we can deduce that it is not necessary to search twice because it could not be changed or set by default to a subclass of MOShape at runtime. That is, the result of the search will always be the same during the execution.\ab{This is too rough and harsh. I cannot really understand this. Explain a bit further}
 
 Therefore, the code was improved using Cache (\figref{Mondrian1}):
 
