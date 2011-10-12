@@ -147,7 +147,7 @@
   \end{center}
   \caption{\label{fig:#4}#5}
 \end{wrapfigure}}
-
+	
 % abbreviations
 \newcommand{\ie}{\emph{i.e.,}\xspace}
 \newcommand{\eg}{\emph{e.g.,}\xspace}
@@ -223,77 +223,216 @@ In this context, we propose a visualization of the execution of an object orient
 
 The purpose of this visualization is to help: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relations, among others.
 
+
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{Execution Blueprint}\seclabel{executionBlueprint}
+\section{A trace visualization framework}\seclabel{framework}
 
-\subsection{In a nutshell}
+Chaski is a framework to visualize object oriented execution traces. An execution trace is a structure in which the profiled information is stored. The profiled information is retrieved after program execution (post mortem analysis). To obtain the profiled information, we need execute the application according to a well-defined execution scenario. Therefore we need to analyze those parts of the application that we are really interested.
 
-\fig{}{0.5}{Demo}{Execution Blueprint in a nutshell}
-Execution Blueprint is a visualization that represents the timeline of an application execution. It is obtained after to execute the application according to an execution scenario. An execution scenario being an instance of one or more use cases. (\figref{Demo})
+Chaski separates the profiled information from the visualization, Chaski is able to display different visualizations from the same profiled information. Each visualization is defined by a layout, and has a different purpose.
 
-Execution Blueprint distinguishes three types of components: classifiers, messages and edges. The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B). And the edges link pairs of messages, where a message is related to the message from which it was invoked.
+Chaski provides three default layouts. Also we can define a new layout quickly, and set different colors to the messages based on a particular criteria, depending on what we want to use the visualization for.
 
-The classifiers are displayed as a composition. By example in the \figref{Demo} the packages are composed for its classes  and each class is composed from the objects that were instantiated from it (E).
-
-The messages are vertically aligned with the component receiving the message(D) and placed horizontally in the order in which these messages are received (timeline).
+\subsection{Chaski objectives}
 
 
-%=========
-\subsection{Layout}
+The main purpose of Chaski is to help programmers find problems or anomalies on the application using execution traces. We found that each visualizations can help to detect a limited number of problems. In the following section we present the Chaski layouts and their purpose.
 
-%\largefig{}{1.0}{TestSuite}{Visualizing a Test Suite execution (RBSmallDictionaryTest buildSuite run)}
+Interesting problems that visualization can help to solve are: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relationship, among others.
 
-The essence of ``layout'' are the messages and the chronological order in which messages are received. And it classifies the messages into groups, as seen in the example in \figref{Demo}, where the messages are classified first by class package and finally by object.
-
-While the messages are horizontally sorted in a chronological order, the other components (package, class, object) are sorted vertically by number of messages that has been sent, in this sense the component that sends more messages are located above (\figref{Demo} - C).
-
-Also we can set different colors to the messages based on a criteria, depending on what we want to use the visualization for.
-
-%The classification of messages may vary depending on what one want to analyze. For example the \figref{TestSuite} only classifies the messages by object, because we want analyze the relation between objects that participate of an test suite execution. Note that one of the important features of a suite of tests is that they should be independent of each other: the failure of one test should not cause an avalanche of failures of other tests that depend upon it, nor should the order in which the tests are run matter. Performing setUp before each test and tearDown afterwards helps to reinforce this independence.
-
-%=========
-\subsection{Patterns}
-
-Execution Blueprint allows identifying some execution pattern to help the developer have a better understanding of the current behavior of software and to reduce the analysis time of the visualization in order to enhance the software.
-
-The patterns in Execution Blueprint are classifiers of  recurrent behavior in the visualization. In order to identify patterns in the visualization we use colors in the message based on a criteria. Below we describe the patterns that we found in the visualization.
-
-{\bf Class Common Interaction} represents the common interaction of the different instances from some classes. ... We can identify this pattern when two or more sections of the visualization have the same sequence of messages but the messages for each section were sent and received by different instances from some classes. Detecting the pattern "common interaction" (\figref{ClassIdentity} - A) allows us to analyze and ask ourselves if its necessary to have those instances of that class; if the answer is no, one could re-factor controlling the number of instances of those classes, in this case we could use flyweight factory or singleton design patterns.
-
-{\bf Object Common Interaction} represents a specification of the pattern ``Class Common Interaction'', where two or more sections of the visualization have a common sequence of messages and there is a perfect match between objects and messages (\figref{YYY} - A). Which implies that the messages of each sections are transmitted and received by the same objects. Again. we can ask ourselves: Do I need to do the same two or more times?.  If the answer is no, you could re-factor this using cache in order to not to do the same operations two or more times.
-
-{\bf Lineal interaction}, represents an interaction of only one object with yourself. Where the messages are sent or received by the same object (\figref{LinealInteraction} green boxes). This pattern no necessary detect a possible problem, because objects do not interact with other objects of different classes or packages, this represent an independent behavior (atomic).
-
-
-{\bf Iterative interaction}, represents an iteration over a collections of objects (\figref{IteratorPattern}). Where a message (A) appears as a origin of one o more common interactions (B). This pattern helps us to find common interaction patterns.
-	
-{\bf Reflexive interaction}, represents the invocations themselves as objects, sending the same message to different objects. We can see this pattern in the \figref{ReflexivePattern} (A), where the magenta messages has the same selector. This pattern us to find common interactions like the iterative pattern.
-
-
-\fig{}{0.5}{ClassIdentity}{ Class Common Interaction}
-\fig{}{0.5}{LinealInteraction}{Lineal Interaction}
-\fig{}{0.5}{IteratorPattern}{Iterator Interaction}
-\fig{}{0.5}{ReflexivePattern}{Reflexive Interaction}
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{Case Study}\seclabel{case study}
 
-\subsection{Mondrian}
+\subsection{Chaski layouts}
 
-\largefig{}{1.0}{Before1}{Execution anomalies}
-We will use Mondrian to demonstrate how ``Execution BluePrint'' visualization is useful to understand the current behavior of the software and find candidates for refactoring and optimization. To which we will address the visualization for the following code execution \figref{Mondrian1}:
+{\bf Tree Layout},
+
+\fig{}{0.25}{TreeLayout}{Tree Layout}
+
+This layout displays all  sent messages(boxes). And the edges link pairs of messages, where a message is related to the message from which it was invoked.
+
+Using interactions (click) in the nodes(boxes) help us to find repetitive behavior, as we can see in the \figref{TreeWithColor}. Where the red boxes are messages that meet the following criteria: i) they have the same selector ii) they are received by the same object.The yellow boxes meet the following criteria: i) they have the same selector ii) the receivers of these messages are instances of the same class.
+Colors help us to detect possible points where we can apply a cache, for example, red messages cause the same sequence of messages and they are received by the same object. The cache stores data so that future invocation of a same method for that data can be retrieved faster.
+
+{\bf Sequence Layout},
+
+\fig{}{0.5}{Demo}{Sequence Layout}
+
+This layout distinguishes three types of components: classifiers, messages and edges (\figref{Demo}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B). And the edges link pairs of messages, where a message is related to the message from which it was invoked.
+
+The classifiers are displayed as a composition. Note that in the \figref{Demo} the packages are composed for its classes  and each class is composed from the objects that were instantiated from it (E).
+
+The messages are vertically aligned with the component receiving the message(D), and placed horizontally in the order in which these messages are received (timeline).
+
+\subsection{How do you define a new layout?}
+
+In this section we show how to you define a new layout. For this we use Chaski to create a known visualization named "Execution Mural" [??]. The Execution Mural shows time on the horizontal axis and messages passed between classes in a program on the vertical. This take the approach of creating a general view showing all the classes and messages. Where the classes are on vertical axis, and each message is single line of 1 pixel wide from source to destination class.
+
+Basically we need to create an specification of ChaskiLayout, and overwrite the "applyLayoutWith:" method.
 \begin{lstlisting}[language=Smalltalk]
-	...
-	view  :=  MOViewRenderer title: 'Chaski'.
+MuralLayout>>applyLayoutWith: profiledInformation
+|classes messages|
+
+"Select what information we want show, in this case classes and messages"
+classes := profiledInformation allClasses.
+messages := profiledInformation allReceivedMessages.	
+
+"Set x, y, width, height and color properties"
+self applyLayoutOnClasses: classes.
+self applyLayoutOnMessages: messages.
+
+"Mondrian script"
+view shape rectangle fillColor: [ : model | model moNode color];
+		width: [ : model | model moNode width];
+		height:  [ : model | model moNode height] ; 
+		disableCache;
+		text:[: model |  model className ].
+view nodes: classes.
+view shape rectangle fillColor: [ : model | model moNode color];
+		width: [ : model | model moNode width];
+		height:  [ : model | model moNode height] ; 
+		withoutBorder;
+		disableCache.
+view nodes: messages.
+""
+\end{lstlisting}
+\begin{lstlisting}[language=Smalltalk]
+MuralLayout>>applyLayoutOnClasses: classes
+|xo yo|
+xo := 5. yo := 5.
+classes do: [ : class | 
+	class moNode x: xo.   
+	class moNode y: yo.
+	class moNode width: defaultWidth. 
+	class moNode height: defaultHeight. 
+	yo := yo + defaultHeight.].
+\end{lstlisting}
+\begin{lstlisting}[language=Smalltalk]
+MuralLayout>>applyLayoutOnMessages: messages
+|xo a b c|
+xo := defaultWidth +12.
+messages do: [ :m | 
+	m sender ifNotNil: [ "maybe the sender is in a package no profiled"
+		a := m sender  cclass moNode y.
+		b := m receiver cclass moNode y + m receiver cclass moNode height.
+		(a > b) ifTrue: [ c:= b. b:=a. a:=c. ].
+		m moNode height: (b - a).
+		m moNode width: 1.
+		m moNode y:  a.
+		m moNode x: xo.
+		m moNode color: Color gray.
+		xo := xo+m moNode width.
+	]. ].
+\end{lstlisting}
+
+After to defining the layout we need set it before open the visualization. 
+\begin{lstlisting}[language=Smalltalk]
+Chaski  profile:[
+	|view|
+	view := MOViewRenderer new.
 	view nodes: MOGraphElement withAllSubclasses.
-	Chaski profile:[ 
-		view edgesFrom: #superclass.
-		] inPackagesMatching:'Mondrian-*'.
-	Chaski visualize.
-	...
+	view edgesFrom: #superclass.
+] inPackagesMatching: 'Mondrian-*'.
+Chaski layout: MuralLayout new.
+Chaski open.
+\end{lstlisting}
+\fig{}{0.5}{ExecutionMural}{Execution Mural}
+The code above creates the visualization depicted in \figref{ExecutionMural}
+
+\section{Case of Study}\seclabel{case study}
+
+In this section we show how Chaski visualizations help to improve the performance of Mondrian.
+For this we use this Mondrian script as an example:
+\begin{lstlisting}[language=Smalltalk]
+Chaski  profile:[
+	|view|
+	view := MOViewRenderer new.
+	view nodes: MOShape withAllSubclasses.
+	view edgesFrom: #superclass.
+	view treeLayout.
+	view open.
+] inPackagesMatching: 'Mondrian-*'.
+\end{lstlisting}
+
+This script generates an easy visualization that corresponds a MOShape class hierarchy depicted on \figref{MondrianExample}, where each node is a class, edges designate inheritance. In this simple example 400 objects of Mondrian were created and they received 12687 messages.
+
+\begin{center}
+   \begin{tabular}{|l||ccr|} \hline
+	Class & Instances & Messages \\
+	MOMorphPainterVisitor & 1 & 51	\\
+	MORectangleShape & 2 & 1602	\\
+	MOStraightLineShape & 1 & 296	\\
+	MOTreeLayout & 1 & 536	\\
+	ConcreteShapeVisitor & 49 & 98 \\
+	MONode & 300 & 5693\\
+	MOElementShapeProperties & 10 & 85\\
+	MOViewRenderer & 1 & 292\\
+	MOEdge & 24 & 3442\\
+	MORoot & 6 & 548\\
+	MOBrowser & 1 & 11\\
+	MOCanvas & 1 & 9\\
+	MOAnnouncer & 3 & 24\\
+	Total & 400 & 12687 \\
+   \end{tabular}
+\end{center}
+
+We get surprised with these result: Why 300 objects of MONode were created if "MOShape withAllSubclasses" only are 25 elements?. We search in the extend code and we could not find the reason. This simple anomalies brought us to follow many questions: Are 400 objects really needed? Where are used these objects? Are 12687 messages needed? Can we reduce the number of messages?.
+
+\subsection{Using Tree Layout}
+
+\largefig{}{1.0}{MondrianTreeLayout}{Mondrian Tree Layout}
+
+In this section we visualize the following instruction using Tree Layout (\figref{MondrianTreeLayout}):
+\begin{lstlisting}[language=Smalltalk]
+|view|
+Chaski profile: [
+	view := MOViewRenderer new.
+	view nodes: ChaskiLayout withAllSubclasses.
+	]  inPackagesMatching: 'Mondrian-*'.
+Chaski layout treeMessageLayout.
+Chaski open.
 \end{lstlisting}
 
 
-\subsection{Execution anomalies}
+In this context we can analyze the red message:
+\begin{lstlisting}[language=Smalltalk]
+defaultNodeShapeClass
+"Return the default node shape class"
+| classes |
+
+classes := (self allSubclasses select: #isDefaultNodeShape).
+classes ifEmpty: [ self error: 'No default shape class' ].
+
+^ classes anyOne
+\end{lstlisting}
+
+This code clearly does a search twice during the execution, and the search is independent of the context because this method doesn't receive parameters and also doesn't use an instance variable. Clearly this is a method we can improve using cache.
+\begin{lstlisting}[language=Smalltalk]
+defaultNodeShapeClass
+"Return the default node shape class"
+
+| classes |
+DefaultNodeShapeClass ifNotNil: [ ^ DefaultNodeShapeClass ].
+classes := (self allSubclasses select: #isDefaultNodeShape).
+classes ifEmpty: [ self error: 'No default shape class' ].
+
+^ DefaultNodeShapeClass := classes anyOne.
+
+\end{lstlisting}
+
+\subsection{Using Sequence Layout}
+
+\largefig{}{1.0}{MondrianSequenceLayout}{Sequence Tree Layout}
+In this section we visualize the following instructions using Sequence Layout (\figref{}):
+\begin{lstlisting}[language=Smalltalk]
+|view|
+view := MOViewRenderer new.
+view nodes: ChaskiLayout withAllSubclasses.
+Chaski profile: [
+	view edgesFrom:#superclass.
+	]  inPackagesMatching: 'Mondrian-*'.
+Chaski layout treeMessageLayout.
+Chaski open.
+\end{lstlisting}
 
 In this section we will examine \figref{Before1}. The first execution anomaly that we can found is in the section (A), where there are some objects that receive only one message in the execution. The following code correspond to these messages.
 
@@ -314,12 +453,8 @@ MONode>>nodesDo: aBlock
 	nodes do: aBlock
 \end{lstlisting} 
 
-And this do something with the original subnodes, this is possible see in the visualization. but the copy nodes do nothing after that because no body save it's reference. This is clearly an issue  and it is consuming memory needlessly.
+And this do something with the original subnodes, this is possible to see in the visualization, but the copy nodes do nothing after that because nobody save it's reference. This is clearly an issue  and it is consuming memory needlessly.
 
-
-\subsection{Improvement}
-
-\largefig{}{1.0}{After1}{Improvement}
 For the first execution anomaly, we refactor the ``allNodesDo:'' method: 
 \begin{lstlisting}[language=Smalltalk]
 MOGraphElement>>allNodesDo: aBlock
@@ -329,73 +464,36 @@ MOGraphElement>>allNodesDo: aBlock
 		each allNodesDo: aBlock ]
 \end{lstlisting} 
 
+\begin{center}
+   \begin{tabular}{|l||ccr|} \hline
+	Class & Instances & Messages \\
+	MOMorphPainterVisitor & 1 & 51	\\
+	MORectangleShape & 2 & 1602	\\
+	MOStraightLineShape & 1 & 296	\\
+	MOTreeLayout & 1 & 536	\\
+	ConcreteShapeVisitor & 49 & 98 \\
+	MONode & 25 & 5693\\
+	MOElementShapeProperties & 10 & 91\\
+	MOViewRenderer & 1 & 292\\
+	MOEdge & 24 & 3442\\
+	MORoot & 1 & 548\\
+	MOBrowser & 1 & 11\\
+	MOCanvas & 1 & 9\\
+	MOAnnouncer & 3 & 24\\
+	Total & 120 & 12696 \\
+   \end{tabular}
+\end{center}
 
-%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{Managing the scalability}\seclabel{scalability}
-
-\jp { Delete??}
-%The large number of objects and messages involved in an object-oriented program execution makes the visualization extremely large and difficult to analyse.
-
-%In order to reduce the visualization size is recommended to group the messages simply by class and package. In addition we can use colors in messages can help to a better analisis.
-
-%Being able to find repetitive behavior,it is possible to have a reduced version of litle set of message sequence that represent all execution. This would allow greatly reduce the visualializacion, in the future.
-
-%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Discussion}\seclabel{discussion}
 
-The large-scale sequence of messages makes the screen resolution not enough to show a lot of information,causing the emergence of scrolls that make the graphics difficult to understand. Group the messages only by class and packages reduce the height of a visualization. However the big number of messages remains a problem.
+The large-scale sequence of messages makes the screen resolution not enough to show a lot of information,causing the emergence of scrolls that make the graphics difficult to understand. 
+%Group the messages only by class and packages reduce the height of a visualization. However the big number of messages remains a problem.
 
-
-%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{Implementation}\seclabel{implementation}
-
-\subsection{Chaski}
-
-Chaski is a tool that implement the layout of Execution Blueprint in Pharo. And allows analyze portions of the application that really interest us to achieve an objective. To do the case study, we use the following script with Chaski.
-
-\begin{lstlisting}[language=Smalltalk]
-	view  :=  MOViewRenderer title: 'Chaski'.
-	view nodes: MONode withAllSubclasses.
-	Chaski profile:[ 
-		view edgesFrom: #superclass.
-		] inPackagesMatching:'Mondrian-*'.
-	Chaski exportAsHTML.
-\end{lstlisting}
-
-Chaski allow apply filter in the visualizations components. In the case of last code we apply a filter in order to display only packages that start with ``Mondrian-''. And we only analyze how Mondrian establish the edges with the method ``edgesFrom''.
-
-\fig{}{0.3}{Chaski}{Chaski}
-
-As shown in the \figref{Chaski}, Chaski was created as an especification of Spy coupled with Mondrian to render profiled information.
-
-%\fig{}{0.5}{ObjectModel}{Structure of Chaski}
-
-%The core classes for Chaski are depicted in \figref{ObjectModel}. Note that there are two additional classes to the basic structure of Spy, they are ChaskiObject and ChaskiMessage. This is because "Execution Blueprint" makes an analysis beyond class or method.
-
-%Chaski classify messages by packages, class and object by default. And provide options to group messages with different criteria such as \figref{Mondrian1} that only group messages by packages and class. The code below remove object classifier from Chaski default configuration.
-
-%\begin{lstlisting}[language=Smalltalk]
-%...
-%Chaski config displayObjectsThat:[ :aChaskiObject | false].
-%Chaski visualize.
-%\end{lstlisting}
-
-%Also is posible classify messages only by object, with the code below. Where we need remove package and class classifiers form Chaski default configuration (\figref{ChaskiPreview8}).
-%\begin{lstlisting}[language=Smalltalk]
-%...
-%Chaski config displayPackagesThat:[:aChaskiPackage | false].
-%Chaski config displayClassesThat:[ :aChaskiClass | false].
-%Chaski visualize.
-%\end{lstlisting}
-
-%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Related work}\seclabel{relatedwork}
 
 Research into trace visualization has resulted in various techniques and tools.
 
-
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-
 \section{Conclusion}\seclabel{conclusion}
 
 %\paragraph{Acknowledgment}
