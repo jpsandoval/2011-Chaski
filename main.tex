@@ -196,74 +196,111 @@ Department of Computer Science (DCC)\\ University of Chile, Santiago, Chile\\[1 
 
 \emph{This paper makes use of colored figures. Though colors are not mandatory for full understanding, we recommend  the use of a colored printout.}
 
+%We currently know little about the execution of software in general. Most of the tools we use to construct software focus on static abstractions (class and method definitions) instead of message sending. Little options are offered to developers to fully understand how objects interact. 
+%As a consequence, developers have to resort to ad-hoc solutions to identify redundant computation, excessive memory consumption and odd interactions. 
+
+
 \begin{abstract}
 %	What's the problem.
 %	Why is the problem a problem?
 %	What's the surprising idea?
 %	What's the consequence?
 
-Understanding the behavior of software is one essential task of the software life cycle, especially when maintenance activities have to be performed. One has to analyze the code, the documentation or any other device before making any changes therefore it becomes a difficult task and time consuming.
+%Understanding the behavior of software is an essential task of the software life cycle, especially when performance monitoring activities have to be maintained.
+Traditional code profilers and debuggers essentially see a software as a a bunch of classes and methods, defined in textual files. These abstractions are quite distinct from the ones used in a computation, messages and objects. A sever consequence is that developers often turn to ad-hoc solutions to identify redundant computation, excessive memory consumption and odd interactions.  %understand better the execution.
 
-Our goal is to show a visualization that represents the interaction of objects involved in the execution which can help developers gain a better understanding of the software execution. The large number of objects involved in execution represents a major challenge.
+We propose \emph{execution blueprints} to visually identify execution patterns. Our blueprints visualize messages sent between objects. Adequate combinations of layouts and coloring reveals certain execution anomalies and performances issues.
 
-Chaski is a tool to address this problem of understanding by visualizing the execution of an object oriented program. Execution blueprint shows the interaction between objects through messages exchanged between them, in the order they occur. \ab{Say more about the visualization}. This visualization helps to: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relations, among others.
+Thanks to our framework Chaski, we were able to find a number of serious defect in applications written in Pharo.
 
-
+%Our goal is to show a visualization that represents the interaction of objects involved in the execution which can help developers gain a better understanding of the software execution. The large number of objects involved in execution represents a major challenge.
+%
+%Chaski is a tool to address this problem of understanding by visualizing the execution of an object oriented program. Execution blueprint shows the interaction between objects through messages exchanged between them, in the order they occur. \ab{Say more about the visualization}. This visualization helps to: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relations, among others.
 \end{abstract}
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \section{Introduction}\seclabel{introduction}
 
-The use of highly reflective dynamic languages can make seemingly simple questions(how 2 or more packages interact? What kinds are dependent to a certain class? When exactly this method is invoked?)difficult to answer if we just analyze the source code, documentation or any other appliance design.
+We propose a number of visual representations of software execution to identify problematic execution patterns. An \emph{execution blueprint} visualizes the profiling by focusing on message sequences. A blueprint is parametrized with a layout and a color map. The layout assigns to each message a physical position on the screen and the color map assign a color against some property of the message.
 
-To answer these questions among others and to improve the process of understanding, it is necessary to make a dynamic analysis, or analysis of data retrieved from the execution of a program.
-
-In this context, we propose a visualization of the execution of an object oriented program, showing the interaction between objects through messages exchanged between them, in the order they occur. While understanding the overall behavior of the system is ideal, this visualization was intended to be used by objectives, in other words, to analyze portions of the application that really interest us to achieve an objective.
-
-The purpose of this visualization is to help: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relations, among others.
+We implemented our blueprint in Chaski, a framework for execution trace visualization. Chaski allows one to easily define a new blueprint with a customized layout and color map.
 
 
-%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{A trace visualization framework}\seclabel{framework}
-
-Chaski is a framework to visualize object oriented execution traces. An execution trace is a structure in which the profiled information is stored. The profiled information is retrieved after program execution (post mortem analysis). To obtain the profiled information, we need execute the application according to a well-defined execution scenario. Therefore we need to analyze those parts of the application that we are really interested.
-
-Chaski separates the profiled information from the visualization, Chaski is able to display different visualizations from the same profiled information. Each visualization is defined by a layout, and has a different purpose.
-
-Chaski provides three default layouts. Also we can define a new layout quickly, and set different colors to the messages based on a particular criteria, depending on what we want to use the visualization for.
-
-\subsection{Chaski objectives}
 
 
-The main purpose of Chaski is to help programmers find problems or anomalies on the application using execution traces. We found that each visualizations can help to detect a limited number of problems. In the following section we present the Chaski layouts and their purpose.
-
-Interesting problems that visualization can help to solve are: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relationship, among others.
+%The use of highly reflective dynamic languages can make seemingly simple questions(how 2 or more packages interact? What kinds are dependent to a certain class? When exactly this method is invoked?)difficult to answer if we just analyze the source code, documentation or any other appliance design.
+%
+%To answer these questions among others and to improve the process of understanding, it is necessary to make a dynamic analysis, or analysis of data retrieved from the execution of a program.
+%
+%In this context, we propose a visualization of the execution of an object oriented program, showing the interaction between objects through messages exchanged between them, in the order they occur. While understanding the overall behavior of the system is ideal, this visualization was intended to be used by objectives, in other words, to analyze portions of the application that really interest us to achieve an objective.
+%
+%The purpose of this visualization is to help: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relations, among others.
+%
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\section{Execution Blueprints}
 
-\subsection{Chaski layouts}
+An execution trace is a structure in which the profiled information is stored\ab{Give a reference, I guess this is not your definition}. Execution blueprint is a post mortem analysis, implying that the software execution has terminated. 
 
-{\bf Tree Layout},
+A computation in an object-oriented language is exercised with objects interacting by sending messages to themselves. We proposes two execution blueprints, a \emph{message-centric blueprint} that emphasizes on the messages sent between objects and an \emph{object-centric blueprint} to represents the interactions between objects.
 
-\fig{}{0.25}{TreeLayout}{Tree Layout}
+A blueprint represents messages and objects as a small colored box. Edges between two boxes represents the sequence between messages. As discussed below, the differences between the two blueprints is essentially based on the color map and the layout.
 
-This layout displays all  sent messages(boxes). And the edges link pairs of messages, where a message is related to the message from which it was invoked.
+We illustrate the blueprint on contrived but representative examples. The following sections will study their applications on a large case study.
+
+%\subsection{Chaski objectives}
+%
+%
+%The main purpose of Chaski is to help programmers find problems or anomalies on the application using execution traces. We found that each visualizations can help to detect a limited number of problems. In the following section we present the Chaski layouts and their purpose.
+%
+%Interesting problems that visualization can help to solve are: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relationship, among others.
+
+%============
+\subsection{Message-centric execution blueprint}
+
+\fig{}{0.25}{TreeLayout}{Message-centric execution blueprint\ab{Add numbers in the picture, for the messages}}
+
+\paragraph{Specification}
+
+\paragraph{Interpretation} \ab{What \figref{TreeLayout} is telling us?}
+
+\paragraph{Interaction}
+
+\ab{The following has to be massaged in the 3 sections above}
+The message-centric blueprint displays all sent messages(boxes). And the edges link pairs of messages, where a message is related to the message from which it was invoked.
 
 Using interactions (click) in the nodes(boxes) help us to find repetitive behavior, as we can see in the \figref{TreeWithColor}. Where the red boxes are messages that meet the following criteria: i) they have the same selector ii) they are received by the same object.The yellow boxes meet the following criteria: i) they have the same selector ii) the receivers of these messages are instances of the same class.
 Colors help us to detect possible points where we can apply a cache, for example, red messages cause the same sequence of messages and they are received by the same object. The cache stores data so that future invocation of a same method for that data can be retrieved faster.
 
-{\bf Sequence Layout},
+%============
+\subsection{Object-centric execution blueprint}
 
 \fig{}{0.5}{Demo}{Sequence Layout}
 
+\paragraph{Specification}
+
+\paragraph{Interpretation} \ab{What \figref{Demo} is telling us?}
+
+\paragraph{Interaction}
+
+\ab{The following has to be massaged in the 3 sections above}
 This layout distinguishes three types of components: classifiers, messages and edges (\figref{Demo}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B). And the edges link pairs of messages, where a message is related to the message from which it was invoked.
 
 The classifiers are displayed as a composition. Note that in the \figref{Demo} the packages are composed for its classes  and each class is composed from the objects that were instantiated from it (E).
 
 The messages are vertically aligned with the component receiving the message(D), and placed horizontally in the order in which these messages are received (timeline).
 
-\subsection{How do you define a new layout?}
+%============
+
+%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+\section{The Chaski Framework}\seclabel{framework}
+
+Chaski is a framework to visualize object oriented execution traces. 
+
+Also we can define a new layout quickly, and set different colors to the messages based on a particular criteria, depending on what we want to use the visualization for.
+
 
 In this section we show how to you define a new layout. For this we use Chaski to create a known visualization named "Execution Mural" [??]. The Execution Mural shows time on the horizontal axis and messages passed between classes in a program on the vertical. This take the approach of creating a general view showing all the classes and messages. Where the classes are on vertical axis, and each message is single line of 1 pixel wide from source to destination class.
 
