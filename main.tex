@@ -256,22 +256,27 @@ We illustrate the blueprint on contrived but representative examples. The follow
 %
 %Interesting problems that visualization can help to solve are: understand the current behavior of the software, find candidates for refactoring and optimization, show dependencies and relationship, among others.
 
-%============
+%============1
+
 \subsection{Message-centric execution blueprint}
 
 \fig{}{0.25}{TreeLayout}{Message-centric execution blueprint\ab{Add numbers in the picture, for the messages}}
 
 \paragraph{Specification}
 
+The message-centric blueprint displays all sent messages(boxes) and the edges link pairs of messages, where a message is related to the message from which it was invoked.
+
+Colors help us to find identity behavior. To find identity behavior we only need to select a sequence of messages (sub-tree) and automatically all identity sequence of messages (sub-tree) are colored with red and yellow. The colors are set with the following criteria: the red boxes are messages that: i) they have the same selector ii) they are received by the same object; and the yellow boxes are messages that: i) they have the same selector ii) the receivers of these messages are instances of the same class.
+
 \paragraph{Interpretation} \ab{What \figref{TreeLayout} is telling us?}
+
+This blueprint helps us to find identity behavior, for example in \figref{TreeLayout} we can see all sent messages in an execution, the root message or event message is the responsible of invoking all other messages.  Note that there are 5 sub-tree structure like, but only 3 of them are painted with colors red and yellow, because these sub-trees have identity behavior.
+
+Finding identity behavior helps us to detect possible points where we can apply a cache. For example, red messages cause the same sequence of messages and they are received by the same object. The cache stores data so that future invocation of a same method for that data can be retrieved faster.
 
 \paragraph{Interaction}
 
-\ab{The following has to be massaged in the 3 sections above}
-The message-centric blueprint displays all sent messages(boxes). And the edges link pairs of messages, where a message is related to the message from which it was invoked.
-
-Using interactions (click) in the nodes(boxes) help us to find repetitive behavior, as we can see in the \figref{TreeWithColor}. Where the red boxes are messages that meet the following criteria: i) they have the same selector ii) they are received by the same object.The yellow boxes meet the following criteria: i) they have the same selector ii) the receivers of these messages are instances of the same class.
-Colors help us to detect possible points where we can apply a cache, for example, red messages cause the same sequence of messages and they are received by the same object. The cache stores data so that future invocation of a same method for that data can be retrieved faster.
+The trigger to search identity behavior is a click in the root message of a sub-tree. Also we can press a right click in any message to inspect the method associated with the message.
 
 %============
 \subsection{Object-centric execution blueprint}
@@ -280,18 +285,19 @@ Colors help us to detect possible points where we can apply a cache, for example
 
 \paragraph{Specification}
 
-\paragraph{Interpretation} \ab{What \figref{Demo} is telling us?}
+This layout distinguishes three types of components: classifiers, messages and edges (\figref{Demo}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B), and the edges link pairs of messages where a message is related to the message from which it was invoked.
+Classifiers are displayed as a composition. Note that in the \figref{Demo} the packages are composed by its classes and each class is composed by the objects that were instantiated from it (E).
+The messages are vertically aligned with the component receiving the message(D), and placed horizontally in the order in which these messages are received(timeline).
+
+\paragraph{Interpretation}
+
+This blueprint shows how many objects are in the execution, the messages that they received and the interaction between objects through messages exchanged between them, in the order they occur.
 
 \paragraph{Interaction}
 
-\ab{The following has to be massaged in the 3 sections above}
-This layout distinguishes three types of components: classifiers, messages and edges (\figref{Demo}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B). And the edges link pairs of messages, where a message is related to the message from which it was invoked.
+Also we can press a right click in any message to inspect the method associated with the message.
 
-The classifiers are displayed as a composition. Note that in the \figref{Demo} the packages are composed for its classes  and each class is composed from the objects that were instantiated from it (E).
-
-The messages are vertically aligned with the component receiving the message(D), and placed horizontally in the order in which these messages are received (timeline).
-
-%============
+%============1
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
