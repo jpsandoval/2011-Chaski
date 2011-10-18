@@ -260,7 +260,7 @@ We illustrate the blueprint on contrived but representative examples. The follow
 
 \subsection{Message-centric execution blueprint}
 
-\fig{}{0.25}{TreeLayout}{Message-centric execution blueprint\ab{Add numbers in the picture, for the messages}}
+\fig{}{0.4}{TreeLayout2}{Message-centric execution blueprint}
 
 \paragraph{Specification}
 
@@ -268,9 +268,9 @@ The message-centric blueprint displays all sent messages(boxes) and the edges li
 
 Colors help us to find identity behavior. To find identity behavior we only need to select a sequence of messages (sub-tree) and automatically all identity sequence of messages (sub-tree) are colored with red and yellow. The colors are set with the following criteria: the red boxes are messages that: i) they have the same selector ii) they are received by the same object; and the yellow boxes are messages that: i) they have the same selector ii) the receivers of these messages are instances of the same class.
 
-\paragraph{Interpretation} \ab{What \figref{TreeLayout} is telling us?}
+\paragraph{Interpretation}
 
-This blueprint helps us to find identity behavior, for example in \figref{TreeLayout} we can see all sent messages in an execution, the root message or event message is the responsible of invoking all other messages.  Note that there are 5 sub-tree structure like, but only 3 of them are painted with colors red and yellow, because these sub-trees have identity behavior.
+This blueprint helps us to find identity behavior, for example in \figref{TreeLayout} we can see all sent messages in an execution, the root message or event message is the responsible of invoking all other messages(A).  Note that there are 5 sub-tree structure like, but only 3 of them are painted with colors red and yellow(B), because these sub-trees have identity behavior.
 
 Finding identity behavior helps us to detect possible points where we can apply a cache. For example, red messages cause the same sequence of messages and they are received by the same object. The cache stores data so that future invocation of a same method for that data can be retrieved faster.
 
