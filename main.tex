@@ -207,9 +207,10 @@ Department of Computer Science (DCC)\\ University of Chile, Santiago, Chile\\[1 
 %	What's the consequence?
 
 %Understanding the behavior of software is an essential task of the software life cycle, especially when performance monitoring activities have to be maintained.
-Traditional code profilers and debuggers essentially see a software as a a bunch of classes and methods, defined in textual files. These abstractions are quite distinct from the ones used in a computation, messages and objects. A sever consequence is that developers often turn to ad-hoc solutions to identify redundant computation, excessive memory consumption and odd interactions.  %understand better the execution.
+Traditional code profilers and debuggers for object-oriented programming languages essentially consider a software as a bunch of classes and methods, defined in textual files. These abstractions poorly match with what a computation is made of: objects sending and receiving messages. A sever consequence is that developers often turn to ad-hoc solutions to identify redundant computation, excessive memory consumption and odd interactions.  %understand better the execution.
 
-We propose \emph{execution blueprints} to visually identify execution patterns. Our blueprints visualize messages sent between objects. Adequate combinations of layouts and coloring reveals certain execution anomalies and performances issues.
+We propose \emph{execution blueprints} to visually identify execution patterns. Our blueprints offer intuitive execution representations, useful to identify abnormal and odd object interactions. 
+Adequate combinations of layouts and coloring reveals certain execution anomalies and performances issues.
 
 Thanks to our framework Chaski, we were able to find a number of serious defect in applications written in Pharo.
 
@@ -222,11 +223,30 @@ Thanks to our framework Chaski, we were able to find a number of serious defect 
 
 \section{Introduction}\seclabel{introduction}
 
-We propose a number of visual representations of software execution to identify problematic execution patterns. An \emph{execution blueprint} visualizes the profiling by focusing on message sequences. A blueprint is parametrized with a layout and a color map. The layout assigns to each message a physical position on the screen and the color map assign a color against some property of the message.
+%Dynamic analysis 
+
+Data-mining program execution traces is known to be difficult. Exploring a real-world list of sequence execution events cannot be effective without addressing scalability issues~\cite{Kuhn06c} and supporting expressive queries~\cite{Zaid05a}. 
+
+Visualizing execution trace has recently been identified as a promising approach to manage scalability and pattern recognition~\cite{Maoz11a,Zaid05a,Reis07a}. %Numerous approaches have been proposed in that respect. 
+
+Maletic \etal~\cite{Male02a} state ``no single software visualization tool can address all software engineering tasks simultaneously.'' However, when we retrospectively look at the existing trace visualization engines, it is startling to see that the great majority are rigid in the visual representation they support. Visualizations are usually targeted at identifying one family of patterns.% and the engine behind is hardly extendable. 
+
+Consider circular bundle view proposed by Cornelissen \etal~\cite{Corn08a}. Structural program elements are on the circumference of a circle and runtime invocations are bundled based on B-spline curves~\cite{Holt06b}. Whereas the visualization is adjustable (\eg high-level structural entities may be collapsed) the range of discoverable patterns remains constant. The situation is similar with other visualization engines, including TraceVis~\cite{Deel07a} and Tracer~\cite{Maoz11a}.
+
+ 
+
+%~\cite{Male02a}
+%Tasks -- why is the visualization needed?%Audience -- who will use the visualization?%Target -- what is the data source to represent?%Representation -- how to represent it?%Medium -- where to represent the visualization?
+
+We address this problem by proposing a framework for \emph{execution blueprints}, a blueprint being a tailored visual trace representation. An execution blueprint aims at identifying problematic execution patterns. From a given execution trace of an object-oriented application, an execution blueprint visualizes the exchanged messages and the object involved in the profiled computation.
+
+A blueprint is parametrized with a layout and a color map. The layout assigns to each message a physical position on the screen and the color map assigns a color against some property of the message.
 
 We implemented our blueprint in Chaski, a framework for execution trace visualization. Chaski allows one to easily define a new blueprint with a customized layout and color map.
 
-
+This paper is structured as follows. 
+\secref{executionBlueprints} presents two execution blueprints
+\secref{caseStudy} employs the blueprints to identify execution anomalies in an application large of 200 classes.
 
 
 %The use of highly reflective dynamic languages can make seemingly simple questions(how 2 or more packages interact? What kinds are dependent to a certain class? When exactly this method is invoked?)difficult to answer if we just analyze the source code, documentation or any other appliance design.
@@ -239,13 +259,19 @@ We implemented our blueprint in Chaski, a framework for execution trace visualiz
 %
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{Execution Blueprints}
+\section{Execution Blueprints} \seclabel{executionBlueprints}
 
-An execution trace is a structure in which the profiled information is stored\ab{Give a reference, I guess this is not your definition}. Execution blueprint is a post mortem analysis, implying that the software execution has terminated. 
+%We define \emph{execution blueprints} as a visual representation of an execution trace. 
+%
+%In order for our approach to be effective, the execution trace has to contains the names of messages that are sent and an unique identification of the object receiver. 
+%
+%An execution trace is a structure in which the profiled information is stored\ab{Give a reference, I guess this is not your definition}. Execution blueprint is a post mortem analysis, implying that the software execution has terminated. 
+%
+%A computation in an object-oriented language is exercised with objects interacting by sending messages to themselves. 
 
-A computation in an object-oriented language is exercised with objects interacting by sending messages to themselves. We proposes two execution blueprints, a \emph{message-centric blueprint} that emphasizes on the messages sent between objects and an \emph{object-centric blueprint} to represents the interactions between objects.
+We proposes two execution blueprints, a \emph{message-centric blueprint} that emphasizes on the messages sent between objects and an \emph{object-centric blueprint} to represents the interactions between objects.
 
-A blueprint represents messages and objects as a small colored box. Edges between two boxes represents the sequence between messages. As discussed below, the differences between the two blueprints is essentially based on the color map and the layout.
+A blueprint represents a message and an object as a small colored box. Edges between two boxes represents the sequence between messages. As discussed below, the differences between the two blueprints is essentially based on the color map and the layout.
 
 We illustrate the blueprint on contrived but representative examples. The following sections will study their applications on a large case study.
 
@@ -260,13 +286,13 @@ We illustrate the blueprint on contrived but representative examples. The follow
 
 \subsection{Message-centric execution blueprint}
 
-\fig{}{0.4}{TreeLayout2}{Message-centric execution blueprint}
+\fig{}{0.4}{TreeLayout2}{Message-centric execution blueprint\ab{Remove "(22)", it is irrelevant for our purpose}}
 
 \paragraph{Specification}
 
-The message-centric blueprint displays all sent messages(boxes) and the edges link pairs of messages, where a message is related to the message from which it was invoked.
+The message-centric blueprint renders messages as boxes and execution order as edges.
 
-Colors help us to find identity behavior. To find identity behavior we only need to select a sequence of messages (sub-tree) and automatically all identity sequence of messages (sub-tree) are colored with red and yellow. The colors are set with the following criteria: the red boxes are messages that: i) they have the same selector ii) they are received by the same object; and the yellow boxes are messages that: i) they have the same selector ii) the receivers of these messages are instances of the same class.
+Colors help us to find identity behavior \ab{What is an identify behavior?}. To find identity behavior we only need to select a sequence of messages (sub-tree) and automatically all identity sequence of messages (sub-tree) are colored with red and yellow. The colors are set with the following criteria: the red boxes are messages that: i) they have the same selector ii) they are received by the same object; and the yellow boxes are messages that: i) they have the same selector ii) the receivers of these messages are instances of the same class.
 
 \paragraph{Interpretation}
 
@@ -381,7 +407,11 @@ Chaski open.
 \fig{}{0.5}{ExecutionMural}{Execution Mural}
 The code above creates the visualization depicted in \figref{ExecutionMural}
 
-\section{Case of Study}\seclabel{case study}
+
+
+%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+\section{Case of Study}\seclabel{caseStudy}
 
 In this section we show how Chaski visualizations help to improve the performance of Mondrian.
 For this we use this Mondrian script as an example:
@@ -538,6 +568,10 @@ The large-scale sequence of messages makes the screen resolution not enough to s
 
 Research into trace visualization has resulted in various techniques and tools.
 
+\paragraph{Execution pattern}~\cite{Pauw98a}
+
+Execution trace visualization
+~\cite{Maoz11a}
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Conclusion}\seclabel{conclusion}
 
