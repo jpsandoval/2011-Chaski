@@ -236,7 +236,11 @@ Consider circular bundle view proposed by Cornelissen \etal~\cite{Corn08a}. Stru
  
 
 %~\cite{Male02a}
-%Tasks -- why is the visualization needed?%Audience -- who will use the visualization?%Target -- what is the data source to represent?%Representation -- how to represent it?%Medium -- where to represent the visualization?
+%Tasks -- why is the visualization needed?
+%Audience -- who will use the visualization?
+%Target -- what is the data source to represent?
+%Representation -- how to represent it?
+%Medium -- where to represent the visualization?
 
 We address this problem by proposing a framework for \emph{execution blueprints}, a blueprint being a tailored visual trace representation. An execution blueprint aims at identifying problematic execution patterns. From a given execution trace of an object-oriented application, an execution blueprint visualizes the exchanged messages and the object involved in the profiled computation.
 
@@ -291,6 +295,8 @@ We illustrate the blueprint on contrived but representative examples. The follow
 \paragraph{Specification}
 
 The message-centric blueprint renders messages as boxes and execution order as edges.
+
+red = 
 
 Colors help us to find identity behavior \ab{What is an identify behavior?}. To find identity behavior we only need to select a sequence of messages (sub-tree) and automatically all identity sequence of messages (sub-tree) are colored with red and yellow. The colors are set with the following criteria: the red boxes are messages that: i) they have the same selector ii) they are received by the same object; and the yellow boxes are messages that: i) they have the same selector ii) the receivers of these messages are instances of the same class.
 
