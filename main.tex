@@ -290,7 +290,7 @@ We illustrate the blueprint on contrived but representative examples. The follow
 
 \subsection{Message-centric execution blueprint}
 
-\fig{}{0.4}{TreeLayout2}{Message-centric execution blueprint\ab{Remove "(22)", it is irrelevant for our purpose}}
+\fig{}{0.3}{MessageCentricLayout}{Message-centric execution blueprint\ab{Remove "(22)", it is irrelevant for our purpose}}
 
 \paragraph{Specification}
 
@@ -302,7 +302,7 @@ Colors help us to find identity behavior \ab{What is an identify behavior?}. To 
 
 \paragraph{Interpretation}
 
-This blueprint helps us to find identity behavior, for example in \figref{TreeLayout} we can see all sent messages in an execution, the root message or event message is the responsible of invoking all other messages(A).  Note that there are 5 sub-tree structure like, but only 3 of them are painted with colors red and yellow(B), because these sub-trees have identity behavior.
+This blueprint helps us to find identity behavior, for example in \figref{MessageCentricLayout} we can see all sent messages in an execution, the root message or event message is the responsible of invoking all other messages(A).  Note that there are 5 sub-tree structure like, but only 3 of them are painted with colors red and yellow(B), because these sub-trees have identity behavior.
 
 Finding identity behavior helps us to detect possible points where we can apply a cache. For example, red messages cause the same sequence of messages and they are received by the same object. The cache stores data so that future invocation of a same method for that data can be retrieved faster.
 
@@ -313,11 +313,11 @@ The trigger to search identity behavior is a click in the root message of a sub-
 %============
 \subsection{Object-centric execution blueprint}
 
-\fig{}{0.5}{Demo}{Sequence Layout}
+\fig{}{0.4}{ObjectCentricLayout}{Sequence Layout}
 
 \paragraph{Specification}
 
-This layout distinguishes three types of components: classifiers, messages and edges (\figref{Demo}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B), and the edges link pairs of messages where a message is related to the message from which it was invoked.
+This layout distinguishes three types of components: classifiers, messages and edges (\figref{ObjectCentricLayout}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B), and the edges link pairs of messages where a message is related to the message from which it was invoked.
 Classifiers are displayed as a composition. Note that in the \figref{Demo} the packages are composed by its classes and each class is composed by the objects that were instantiated from it (E).
 The messages are vertically aligned with the component receiving the message(D), and placed horizontally in the order in which these messages are received(timeline).
 
@@ -344,59 +344,48 @@ In this section we show how to you define a new layout. For this we use Chaski t
 
 Basically we need to create an specification of ChaskiLayout, and overwrite the "applyLayoutWith:" method.
 \begin{lstlisting}[language=Smalltalk]
-MuralLayout>>applyLayoutWith: profiledInformation
-|classes messages|
+ExecutionMuralLayout>>applyLayoutWith: profiledInformation
+	|classes messages xo yo  from to min|
+	classes  :=   profiledInformation allClasses.
+	messages :=   profiledInformation allReceivedMessages.	
+	"x y classes"
+	xo := gap.
+	yo := gap.
+	classes do: [ : class | 
+		class moNode x: xo.   
+		class moNode y: yo.
+		yo := yo + defaultClassHeight. ].
+	"x y messages"
+	xo := defaultClassWidth + (gap*2).
+	messages do: [ :m | 
+		m sender ifNotNil: [ "maybe the sender is in a no profiled package"
+			from  :=  (m sender  cclass moNode y).
+			to    :=  (m receiver cclass moNode y).
+			min   := (from>to) ifTrue: [to] ifFalse: [from] .
+			m moNode y: min.
+			m moNode x: xo.
+			xo := xo+defaultMessageWidth.  ]. ].
+	
+	"modrian script"
+	view chaskiShape 
+		width:  defaultClassWidth ;
+		height: defaultClassHeight ;
+		text:     [ : class|  class className ].
+	view nodes: classes.
+	view chaskiShape 
+		width:  defaultMessageWidth;
+		height:  [ : message   | self messageHeight: message ] .
+	view nodes: messages.
+	"color"
+	colorMap paint: classes  with: Color white.
+	colorMap paint: messages with: Color gray.
 
-"Select what information we want show, in this case classes and messages"
-classes := profiledInformation allClasses.
-messages := profiledInformation allReceivedMessages.	
-
-"Set x, y, width, height and color properties"
-self applyLayoutOnClasses: classes.
-self applyLayoutOnMessages: messages.
-
-"Mondrian script"
-view shape rectangle fillColor: [ : model | model moNode color];
-		width: [ : model | model moNode width];
-		height:  [ : model | model moNode height] ; 
-		disableCache;
-		text:[: model |  model className ].
-view nodes: classes.
-view shape rectangle fillColor: [ : model | model moNode color];
-		width: [ : model | model moNode width];
-		height:  [ : model | model moNode height] ; 
-		withoutBorder;
-		disableCache.
-view nodes: messages.
-""
-\end{lstlisting}
-\begin{lstlisting}[language=Smalltalk]
-MuralLayout>>applyLayoutOnClasses: classes
-|xo yo|
-xo := 5. yo := 5.
-classes do: [ : class | 
-	class moNode x: xo.   
-	class moNode y: yo.
-	class moNode width: defaultWidth. 
-	class moNode height: defaultHeight. 
-	yo := yo + defaultHeight.].
-\end{lstlisting}
-\begin{lstlisting}[language=Smalltalk]
-MuralLayout>>applyLayoutOnMessages: messages
-|xo a b c|
-xo := defaultWidth +12.
-messages do: [ :m | 
-	m sender ifNotNil: [ "maybe the sender is in a package no profiled"
-		a := m sender  cclass moNode y.
-		b := m receiver cclass moNode y + m receiver cclass moNode height.
-		(a > b) ifTrue: [ c:= b. b:=a. a:=c. ].
-		m moNode height: (b - a).
-		m moNode width: 1.
-		m moNode y:  a.
-		m moNode x: xo.
-		m moNode color: Color gray.
-		xo := xo+m moNode width.
-	]. ].
+ExecutionMuralLayout>>messageHeight: message
+	| from to |
+	message sender ifNil: [ ^ 0]. 
+	from  :=  (message sender  cclass moNode y).
+	to       :=  (message receiver cclass moNode y).
+	^ ( (from > to) ifTrue: [  from-to ] ifFalse: [ to-from ] ) + defaultClassHeight .
 \end{lstlisting}
 
 After to defining the layout we need set it before open the visualization. 
@@ -407,10 +396,10 @@ Chaski  profile:[
 	view nodes: MOGraphElement withAllSubclasses.
 	view edgesFrom: #superclass.
 ] inPackagesMatching: 'Mondrian-*'.
-Chaski layout: MuralLayout new.
+Chaski layout: ExecutionMuralLayout new.
 Chaski open.
 \end{lstlisting}
-\fig{}{0.5}{ExecutionMural}{Execution Mural}
+\fig{}{0.5}{ExecutionMuralDemo}{Execution Mural}
 The code above creates the visualization depicted in \figref{ExecutionMural}
 
 
@@ -423,8 +412,8 @@ In this section we show how Chaski visualizations help to improve the performanc
 For this we use this Mondrian script as an example:
 \begin{lstlisting}[language=Smalltalk]
 Chaski  profile:[
-	|view|
 	view := MOViewRenderer new.
+	|view|
 	view nodes: MOShape withAllSubclasses.
 	view edgesFrom: #superclass.
 	view treeLayout.
@@ -458,16 +447,16 @@ We get surprised with these result: Why 300 objects of MONode were created if "M
 
 \subsection{Using Tree Layout}
 
-\largefig{}{1.0}{MondrianTreeLayout}{Mondrian Tree Layout}
+\largefig{}{1.0}{MessageCentricSample}{Mondrian Tree Layout}
 
-In this section we visualize the following instruction using Tree Layout (\figref{MondrianTreeLayout}):
+In this section we visualize the following instruction using Tree Layout (\figref{MessageCentricSample}):
 \begin{lstlisting}[language=Smalltalk]
 |view|
 Chaski profile: [
 	view := MOViewRenderer new.
 	view nodes: ChaskiLayout withAllSubclasses.
-	]  inPackagesMatching: 'Mondrian-*'.
-Chaski layout treeMessageLayout.
+] inPackagesMatching: 'Mondrian-*'.
+Chaski layout messageCentricLayout.
 Chaski open.
 \end{lstlisting}
 
@@ -500,7 +489,7 @@ classes ifEmpty: [ self error: 'No default shape class' ].
 
 \subsection{Using Sequence Layout}
 
-\largefig{}{1.0}{MondrianSequenceLayout}{Sequence Tree Layout}
+\largefig{}{1.0}{ObjectCentricDemo}{Sequence Tree Layout}
 In this section we visualize the following instructions using Sequence Layout (\figref{}):
 \begin{lstlisting}[language=Smalltalk]
 |view|
@@ -509,11 +498,11 @@ view nodes: ChaskiLayout withAllSubclasses.
 Chaski profile: [
 	view edgesFrom:#superclass.
 	]  inPackagesMatching: 'Mondrian-*'.
-Chaski layout treeMessageLayout.
+Chaski layout objectCentricLayout.
 Chaski open.
 \end{lstlisting}
 
-In this section we will examine \figref{Before1}. The first execution anomaly that we can found is in the section (A), where there are some objects that receive only one message in the execution. The following code correspond to these messages.
+In this section we will examine \figref{ObjectCentricDemo}. The first execution anomaly that we can found is in the section (A), where there are some objects that receive only one message in the execution. The following code correspond to these messages.
 
 \begin{lstlisting}[language=Smalltalk]
 MOGraphElement>>allNodesDo: aBlock
