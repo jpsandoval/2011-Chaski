@@ -324,21 +324,35 @@ The computation invokes the same messages on 3 different objects. The interestin
 %============
 \subsection{Object-centric execution blueprint}
 
-\fig{}{0.4}{ObjectCentricLayout}{Sequence Layout}
+\fig{}{0.4}{ObjectCentricBlueprint}{Object-centric execution blueprint}
 
-\paragraph{Specification}
+\paragraph{Description}
+The object-centric execution blueprint describes the interaction occurring between objects. It renders objects and the messages they received as small colored boxes (\figref{ObjectCentricBlueprint}). The blueprint is composed of two parts.
 
-This layout distinguishes three types of components: classifiers, messages and edges (\figref{ObjectCentricLayout}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B), and the edges link pairs of messages where a message is related to the message from which it was invoked.
-Classifiers are displayed as a composition. Note that in the \figref{Demo} the packages are composed by its classes and each class is composed by the objects that were instantiated from it (E).
-The messages are vertically aligned with the component receiving the message(D), and placed horizontally in the order in which these messages are received(timeline).
+The left hand side presents the structure of the analyzed software. The packages involved in the trace are blue boxes (only one package is represented on the figure). 
+Classes are represented as red boxes and are positioned on the right hand side of the package in which they are defined. Three classes, \ct{C1}, \ct{C2}, \ct{C3}, are involved in the trace. Objects, represented as yellow boxes, are located at the right-hand side of the class for which they are instances of. \ct{C1} and \ct{C2} have only one instance each, \ct{O1} and \ct{O2}, respectively. The class \ct{C3} has five instances.
+
+Messages are located in a large matrix. A message $m$ is at a position $(i,o)$ where $t$ the index of the message in the trace and $o$ is the object that received $m$. Message \ct{m1} is the first message, received by \ct{O1}. Executing the method that corresponds to \ct{m1} sends the message \ct{m2} to one of the instance of \ct{C3}. 
+
+\ab{What is the order of the packages, objects and classes? Is the ordering reflects the order in the trace?}
 
 \paragraph{Interpretation}
+We see that \ct{m1} performs iterates over three instances of \ct{C3}. It then executes 4 times the same method on the object \ct{C2}. Each of these 4 calls  executes a method on an instance of \ct{C3}. 
 
-This blueprint shows how many objects are in the execution, the messages that they received and the interaction between objects through messages exchanged between them, in the order they occur.
+\ab{Are the message performed on O2 the same selector? If yes, how can I know this? Which selector is it?}
 
-\paragraph{Interaction}
 
-Also we can press a right click in any message to inspect the method associated with the message.
+%This layout distinguishes three types of components: classifiers, messages and edges (\figref{ObjectCentricLayout}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B), and the edges link pairs of messages where a message is related to the message from which it was invoked.
+%Classifiers are displayed as a composition. Note that in the \figref{Demo} the packages are composed by its classes and each class is composed by the objects that were instantiated from it (E).
+%The messages are vertically aligned with the component receiving the message(D), and placed horizontally in the order in which these messages are received(timeline).
+%
+%\paragraph{Interpretation}
+%
+%This blueprint shows how many objects are in the execution, the messages that they received and the interaction between objects through messages exchanged between them, in the order they occur.
+%
+%\paragraph{Interaction}
+%
+%Also we can press a right click in any message to inspect the method associated with the message.
 
 %============1
 
