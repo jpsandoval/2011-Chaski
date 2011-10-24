@@ -360,38 +360,43 @@ We see that \ct{m1} performs iterates over three instances of \ct{C3}. It then e
 
 \section{The Chaski Framework}\seclabel{framework}
 
-Chaski is a framework to visualize object oriented execution traces. 
+The two object-centric and message-centric blueprints are two instance of Chaski, our framework to visualize object-oriented execution traces. 
+Chaski offers a small domain-specific language to customize the visualization. As a brief illustration, we will define the execution mural blueprint as proposed by Jerding and Stasko~\cite{Jerd98a}.
 
-Also we can define a new layout quickly, and set different colors to the messages based on a particular criteria, depending on what we want to use the visualization for.
+\fig{}{0.5}{ExecutionMuralDemo}{Execution Mural}
 
+The Execution Mural visualization shows time on the horizontal axis and messages passed between classes in a program on the vertical~\figref{ExecutionMuralDemo}. This take the approach of creating a general view showing all the classes and messages. Where the classes are on vertical axis, and each message is single line of 1 pixel wide from source to destination class.
 
-In this section we show how to you define a new layout. For this we use Chaski to create a known visualization named "Execution Mural" [??]. The Execution Mural shows time on the horizontal axis and messages passed between classes in a program on the vertical. This take the approach of creating a general view showing all the classes and messages. Where the classes are on vertical axis, and each message is single line of 1 pixel wide from source to destination class.
+Basically we need to subclass \ct{AbstractBlueprint} and override the method \ct{doExecute:} method:
+\begin{lstlisting}[]%[language=Smalltalk]
 
-Basically we need to create an specification of ChaskiLayout, and overwrite the "applyLayoutWith:" method.
-\begin{lstlisting}[language=Smalltalk]
-ExecutionMuralLayout>>applyLayoutWith: profiledInformation
-	|classes messages xo yo  from to min|
-	classes  :=   profiledInformation allClasses.
-	messages :=   profiledInformation allReceivedMessages.	
-	"x y classes"
+AbstractBlueprint subclass: #ExecutionMuralBlueprint.
+
+ExecutionMuralBlueprint>>doExecute: profiledInformation
+	| classes messages xo yo  from to min |
+	classes := profiledInformation allClasses.
+	messages := profiledInformation allReceivedMessages.
+	
+	<b>"Positioning classes on the left hand side"</b>
 	xo := gap.
 	yo := gap.
-	classes do: [ : class | 
+	classes do: [ :class | 
 		class moNode x: xo.   
 		class moNode y: yo.
 		yo := yo + defaultClassHeight. ].
-	"x y messages"
+		
+	<b>"Positioning messages"</b>
 	xo := defaultClassWidth + (gap*2).
 	messages do: [ :m | 
 		m sender ifNotNil: [ "maybe the sender is in a no profiled package"
-			from  :=  (m sender  cclass moNode y).
-			to    :=  (m receiver cclass moNode y).
-			min   := (from>to) ifTrue: [to] ifFalse: [from] .
+			from  := m sender  cclass moNode y.
+			to    := m receiver cclass moNode y.
+			min   := (from > to) ifTrue: [ to ] ifFalse: [ from ] .
 			m moNode y: min.
 			m moNode x: xo.
-			xo := xo+defaultMessageWidth.  ]. ].
+			xo := xo+defaultMessageWidth  ] ].
 	
-	"modrian script"
+	"setting "@@@ Do we really need this here?
 	view chaskiShape 
 		width:  defaultClassWidth ;
 		height: defaultClassHeight ;
@@ -401,13 +406,16 @@ ExecutionMuralLayout>>applyLayoutWith: profiledInformation
 		width:  defaultMessageWidth;
 		height:  [ : message   | self messageHeight: message ] .
 	view nodes: messages.
-	"color"
+	
+	<b>"Defining the coloring"</b>
 	colorMap paint: classes  with: Color white.
 	colorMap paint: messages with: Color gray.
 
+@@ do we really need this method here?
 ExecutionMuralLayout>>messageHeight: message
 	| from to |
 	message sender ifNil: [ ^ 0]. 
+	@@ We cannot use #abs here ?
 	from  :=  (message sender  cclass moNode y).
 	to       :=  (message receiver cclass moNode y).
 	^ ( (from > to) ifTrue: [  from-to ] ifFalse: [ to-from ] ) + defaultClassHeight .
@@ -416,7 +424,7 @@ ExecutionMuralLayout>>messageHeight: message
 After to defining the layout we need set it before open the visualization. 
 \begin{lstlisting}[language=Smalltalk]
 Chaski  profile:[
-	|view|
+	| view |
 	view := MOViewRenderer new.
 	view nodes: MOGraphElement withAllSubclasses.
 	view edgesFrom: #superclass.
@@ -424,8 +432,16 @@ Chaski  profile:[
 Chaski layout: ExecutionMuralLayout new.
 Chaski open.
 \end{lstlisting}
-\fig{}{0.5}{ExecutionMuralDemo}{Execution Mural}
-The code above creates the visualization depicted in \figref{ExecutionMural}
+
+\ab{Why not:}
+\begin{lstlisting}[language=Smalltalk]
+ExecutionMuralLayout viewProfile:[
+	| view |
+	view := MOViewRenderer new.
+	view nodes: MOGraphElement withAllSubclasses.
+	view edgesFrom: #superclass.
+] inPackagesMatching: 'Mondrian-*'.
+\end{lstlisting}
 
 
 
