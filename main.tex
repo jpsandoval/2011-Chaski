@@ -212,7 +212,7 @@ Traditional code profilers and debuggers for object-oriented programming languag
 We propose \emph{execution blueprints} to visually identify execution patterns. Our blueprints offer intuitive execution representations, useful to identify abnormal execution.
 Adequate combinations of layouts and coloring reveals certain execution anomalies and performances issues.
 
-Thanks to our framework Chaski, we were able to find a number of serious defect in applications written in Pharo.
+Thanks to our framework Chaski, we were able to find a number of serious defect in applications written in the Pharo programming language.
 
 %Our goal is to show a visualization that represents the interaction of objects involved in the execution which can help developers gain a better understanding of the software execution. The large number of objects involved in execution represents a major challenge.
 %
@@ -246,7 +246,8 @@ We address this problem by proposing a framework for \emph{execution blueprints}
 
 A blueprint is parametrized with a layout and a color map. The layout assigns to each message a physical position on the screen and the color map assigns a color against some property of the message.
 
-We implemented our blueprint in Chaski, a framework for execution trace visualization. Chaski allows one to easily define a new blueprint with a customized layout and color map.
+All our experiments and implementation have been carried out in Pharo\footnote{\url{http://pharo-project.org}}, a Smalltalk-dialect programming language. 
+We designed and implemented Chaski, a framework for execution trace visualization. Chaski allows one to easily define a new blueprint with a customized layout and color map.
 
 This paper is structured as follows. 
 \secref{executionBlueprints} presents two execution blueprints
@@ -379,129 +380,128 @@ We see that \ct{m1} performs iterates over three instances of \ct{C3}. It then e
 
 \section{The Chaski Framework}\seclabel{framework}
 
-The two object-centric and message-centric blueprints are two instance of Chaski, our framework to visualize object-oriented execution traces. 
+The two object-centric and message-centric blueprints are two instances of Chaski, our framework to visualize object-oriented execution traces. 
 Chaski offers a small domain-specific language to customize the visualization. As a brief illustration, we will define the execution mural blueprint as proposed by Jerding and Stasko~\cite{Jerd98a}.
 
 \fig{}{0.5}{ExecutionMuralDemo}{Execution Mural}
 
-The Execution Mural visualization shows time on the horizontal axis and messages passed between classes in a program on the vertical~\figref{ExecutionMuralDemo}. This take the approach of creating a general view showing all the classes and messages. Where the classes are on vertical axis, and each message is single line of 1 pixel wide from source to destination class.
+The Execution Mural visualization shows time on the horizontal axis and messages passed between classes in a program on the vertical~\figref{ExecutionMuralDemo}. This take the approach of creating a general view showing all the classes and messages. Where the classes are on vertical axis, and each message is a vertical line of 1 pixel wide from source to destination class.
 
-Basically we need to subclass \ct{AbstractBlueprint} and override the method \ct{doExecute:} method:
-\begin{lstlisting}[]%[language=Smalltalk]
+The blueprint requires about 30 lines of Pharo code. First, the abstract class \ct{AbstractBlueprint} has to be subclassed:
 
+\begin{lstlisting}[]
 AbstractBlueprint subclass: #ExecutionMuralBlueprint.
+\end{lstlisting}
 
+The method \ct{doExecute:} has then to be overridden to specify the position of the messages, their color, and their length:
+
+\begin{lstlisting}[]
 ExecutionMuralBlueprint>>doExecute: profiledInformation
-	| classes messages xo yo  from to min |
+	| classes messages xo yo  from to |
+	<b>"All the classes and messages involved in the profiling"</b>
 	classes := profiledInformation allClasses.
 	messages := profiledInformation allReceivedMessages.
 	
 	<b>"Positioning classes on the left hand side"</b>
-	xo := gap.
-	yo := gap.
+	xo := gap. yo := gap.
 	classes do: [ :class | 
 		class moNode x: xo.   
 		class moNode y: yo.
 		yo := yo + defaultClassHeight. ].
 		
-	<b>"Positioning messages"</b>
+	<b>"Positioning messages on the right hand side"</b>
 	xo := defaultClassWidth + (gap*2).
 	messages do: [ :m | 
-		m sender ifNotNil: [ "maybe the sender is in a no profiled package"
+		m sender ifNotNil: [
 			from  := m sender  cclass moNode y.
 			to    := m receiver cclass moNode y.
-			min   := (from > to) ifTrue: [ to ] ifFalse: [ from ] .
-			m moNode y: min.
+			m moNode y: (from min: to).
 			m moNode x: xo.
 			xo := xo+defaultMessageWidth  ] ].
 	
-	"setting "@@@ Do we really need this here?
+	<b>"Adding the element in the visualization"</b>
 	view chaskiShape 
-		width:  defaultClassWidth ;
-		height: defaultClassHeight ;
+		"width:  defaultClassWidth ;
+		height: defaultClassHeight ;"
 		text:     [ : class|  class className ].
 	view nodes: classes.
 	view chaskiShape 
-		width:  defaultMessageWidth;
+		"width:  defaultMessageWidth;"
 		height:  [ : message   | self messageHeight: message ] .
 	view nodes: messages.
 	
 	<b>"Defining the coloring"</b>
 	colorMap paint: classes  with: Color white.
 	colorMap paint: messages with: Color gray.
+\end{lstlisting}
 
-@@ do we really need this method here?
+The size of a message is computed as follows:
+\begin{lstlisting}[]
 ExecutionMuralLayout>>messageHeight: message
 	| from to |
 	message sender ifNil: [ ^ 0]. 
-	@@ We cannot use #abs here ?
 	from  :=  (message sender  cclass moNode y).
 	to       :=  (message receiver cclass moNode y).
-	^ ( (from > to) ifTrue: [  from-to ] ifFalse: [ to-from ] ) + defaultClassHeight .
+	^ (from - to) abs + defaultClassHeight .
 \end{lstlisting}
 
-After to defining the layout we need set it before open the visualization. 
-%\begin{lstlisting}[language=Smalltalk]
-%Chaski  profile:[
-%	| view |
-%	view := MOViewRenderer new.
-%	view nodes: MOGraphElement withAllSubclasses.
-%	view edgesFrom: #superclass.
-%] inPackagesMatching: 'Mondrian-*'.
-%Chaski layout: ExecutionMuralLayout new.
-%Chaski open.
-%\end{lstlisting}
+The trace generation and the visualization is obtained with:
 
-%\ab{Why not:}
-\begin{lstlisting}[language=Smalltalk]
+\begin{lstlisting}[]
 ExecutionMuralLayout viewProfile:[
+	<i>"Example code"
 	| view |
 	view := MOViewRenderer new.
 	view nodes: MOGraphElement withAllSubclasses.
-	view edgesFrom: #superclass.
-] inPackagesMatching: 'Mondrian-*'.
+	view edgesFrom: #superclass.</i>
+] inPackagesMatching: <i>'Mondrian-*'</i>.
 \end{lstlisting}
 
+Italic portion corresponds to an example.
 
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \section{Case of Study}\seclabel{caseStudy}
 
-In this section we show how Chaski visualizations help to improve the performance of Mondrian.
-For this we use this Mondrian script as an example:
-\begin{lstlisting}[language=Smalltalk]
-Chaski  profile:[
-	view := MOViewRenderer new.
-	|view|
-	view nodes: MOShape withAllSubclasses.
-	view edgesFrom: #superclass.
-	view treeLayout.
-	view open.
-] inPackagesMatching: 'Mondrian-*'.
-\end{lstlisting}
+We used the execution blueprint to analyze Mondrian, an agile visualization engine. We identified two deficiencies in its executions.
 
-This script generates an easy visualization that corresponds a MOShape class hierarchy depicted on \figref{MondrianExample}, where each node is a class, edges designate inheritance. In this simple example 400 objects of Mondrian were created and they received 12687 messages.
+Mondrian renders an arbitrary domain by constructing a node for each domain element an and edge for a relation between two domain elements. 
 
-\begin{center}
-   \begin{tabular}{|l||ccr|} \hline
-	Class & Instances & Messages \\
-	MOMorphPainterVisitor & 1 & 51	\\
-	MORectangleShape & 2 & 1602	\\
-	MOStraightLineShape & 1 & 296	\\
-	MOTreeLayout & 1 & 536	\\
-	ConcreteShapeVisitor & 49 & 98 \\
-	MONode & 300 & 5693\\
-	MOElementShapeProperties & 10 & 85\\
-	MOViewRenderer & 1 & 292\\
-	MOEdge & 24 & 3442\\
-	MORoot & 6 & 548\\
-	MOBrowser & 1 & 11\\
-	MOCanvas & 1 & 9\\
-	MOAnnouncer & 3 & 24\\
-	Total & 400 & 12687 \\
-   \end{tabular}
-\end{center}
+%In this section we show how Chaski visualizations help to improve the performance of Mondrian.
+%For this we use this Mondrian script as an example:
+%\begin{lstlisting}[language=Smalltalk]
+%Chaski  profile:[
+%	view := MOViewRenderer new.
+%	|view|
+%	view nodes: MOShape withAllSubclasses.
+%	view edgesFrom: #superclass.
+%	view treeLayout.
+%	view open.
+%] inPackagesMatching: 'Mondrian-*'.
+%\end{lstlisting}
+%
+%This script generates an easy visualization that corresponds a MOShape class hierarchy depicted on \figref{MondrianExample}, where each node is a class, edges designate inheritance. In this simple example 400 objects of Mondrian were created and they received 12687 messages.
+%
+%\begin{center}
+%   \begin{tabular}{|l||ccr|} \hline
+%	Class & Instances & Messages \\
+%	MOMorphPainterVisitor & 1 & 51	\\
+%	MORectangleShape & 2 & 1602	\\
+%	MOStraightLineShape & 1 & 296	\\
+%	MOTreeLayout & 1 & 536	\\
+%	ConcreteShapeVisitor & 49 & 98 \\
+%	MONode & 300 & 5693\\
+%	MOElementShapeProperties & 10 & 85\\
+%	MOViewRenderer & 1 & 292\\
+%	MOEdge & 24 & 3442\\
+%	MORoot & 6 & 548\\
+%	MOBrowser & 1 & 11\\
+%	MOCanvas & 1 & 9\\
+%	MOAnnouncer & 3 & 24\\
+%	Total & 400 & 12687 \\
+%   \end{tabular}
+%\end{center}
 
 We get surprised with these result: Why 300 objects of MONode were created if "MOShape withAllSubclasses" only are 25 elements?. We search in the extend code and we could not find the reason. This simple anomalies brought us to follow many questions: Are 400 objects really needed? Where are used these objects? Are 12687 messages needed? Can we reduce the number of messages?.
 
