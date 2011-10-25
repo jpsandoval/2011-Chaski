@@ -385,7 +385,8 @@ Chaski offers a small domain-specific language to customize the visualization. A
 
 \fig{}{0.5}{ExecutionMuralDemo}{Execution Mural}
 
-The Execution Mural visualization shows time on the horizontal axis and messages passed between classes in a program on the vertical~\figref{ExecutionMuralDemo}. This take the approach of creating a general view showing all the classes and messages. Where the classes are on vertical axis, and each message is a vertical line of 1 pixel wide from source to destination class.
+The Execution Mural visualization shows time on the horizontal axis and messages passed between classes in a program on the vertical~\figref{ExecutionMuralDemo}. This take the approach of creating
+ a general view showing all the classes and messages. Where the classes are on vertical axis, and each message is a vertical line of 1 pixel wide from source to destination class.
 
 The blueprint requires about 30 lines of Pharo code. First, the abstract class \ct{AbstractBlueprint} has to be subclassed:
 
@@ -437,7 +438,7 @@ ExecutionMuralBlueprint>>doExecute: profiledInformation
 
 The size of a message is computed as follows:
 \begin{lstlisting}[]
-ExecutionMuralLayout>>messageHeight: message
+ExecutionMuralBlueprint>>messageHeight: message
 	| from to |
 	message sender ifNil: [ ^ 0]. 
 	from  :=  (message sender  cclass moNode y).
@@ -448,7 +449,7 @@ ExecutionMuralLayout>>messageHeight: message
 The trace generation and the visualization is obtained with:
 
 \begin{lstlisting}[]
-ExecutionMuralLayout viewProfile:[
+ExecutionMuralBlueprint viewProfile:[
 	<i>"Example code"
 	| view |
 	view := MOViewRenderer new.
@@ -511,40 +512,33 @@ We get surprised with these result: Why 300 objects of MONode were created if "M
 
 In this section we visualize the following instruction using Tree Layout (\figref{MessageCentricSample}):
 \begin{lstlisting}[language=Smalltalk]
-|view|
-Chaski profile: [
+MessageCentricBlueprint profileView: [
+	|view|
 	view := MOViewRenderer new.
-	view nodes: ChaskiLayout withAllSubclasses.
+	view nodes: AbstractBlueprint withAllSubclasses.
 ] inPackagesMatching: 'Mondrian-*'.
-Chaski layout messageCentricLayout.
-Chaski open.
 \end{lstlisting}
 
 
 In this context we can analyze the red message:
 \begin{lstlisting}[language=Smalltalk]
-defaultNodeShapeClass
+MOShape class>>defaultNodeShapeClass
 "Return the default node shape class"
 | classes |
-
 classes := (self allSubclasses select: #isDefaultNodeShape).
 classes ifEmpty: [ self error: 'No default shape class' ].
-
 ^ classes anyOne
 \end{lstlisting}
 
 This code clearly does a search twice during the execution, and the search is independent of the context because this method doesn't receive parameters and also doesn't use an instance variable. Clearly this is a method we can improve using cache.
 \begin{lstlisting}[language=Smalltalk]
-defaultNodeShapeClass
+MOShape class>>defaultNodeShapeClass
 "Return the default node shape class"
-
 | classes |
 DefaultNodeShapeClass ifNotNil: [ ^ DefaultNodeShapeClass ].
 classes := (self allSubclasses select: #isDefaultNodeShape).
 classes ifEmpty: [ self error: 'No default shape class' ].
-
 ^ DefaultNodeShapeClass := classes anyOne.
-
 \end{lstlisting}
 
 \subsection{Using Sequence Layout}
@@ -554,12 +548,10 @@ In this section we visualize the following instructions using Sequence Layout (\
 \begin{lstlisting}[language=Smalltalk]
 |view|
 view := MOViewRenderer new.
-view nodes: ChaskiLayout withAllSubclasses.
-Chaski profile: [
+view nodes: AbstractBlueprint withAllSubclasses.
+ObjectCentricBlueprint profileView: [
 	view edgesFrom:#superclass.
-	]  inPackagesMatching: 'Mondrian-*'.
-Chaski layout objectCentricLayout.
-Chaski open.
+]  inPackagesMatching: 'Mondrian-*'.
 \end{lstlisting}
 
 In this section we will examine \figref{ObjectCentricDemo}. The first execution anomaly that we can found is in the section (A), where there are some objects that receive only one message in the execution. The following code correspond to these messages.
@@ -613,11 +605,8 @@ MOGraphElement>>allNodesDo: aBlock
 \end{center}
 
 \section{Discussion}\seclabel{discussion}
-
 The large-scale sequence of messages makes the screen resolution not enough to show a lot of information,causing the emergence of scrolls that make the graphics difficult to understand. 
 %Group the messages only by class and packages reduce the height of a visualization. However the big number of messages remains a problem.
-
-
 
 \section{Related work}\seclabel{relatedwork}
 
