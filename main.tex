@@ -312,6 +312,24 @@ Differences between the matched structures is indicated with yellow and red. A y
 The computation invokes the same messages on 3 different objects. The interesting point here is the presence of the red nodes, which are 3 messages sent to the same objects. Identifying that an object receive several time the same messages may indicate a candidate for inserting a memoization. 
 
 \ab{What is the code of the method invoked with Message 1?}
+\jp{the method is :}
+\begin{lstlisting}[language=Smalltalk]
+MOViewRenderer>>nodes: aCollection using: aShape 
+| nodes newNode |
+self assert: [ aCollection isCollection ] description: 'A collection should be provided, else use #node: instead'.
+nodes := aCollection collect: 
+	[ :anEntity | 
+	newNode := MONode new.
+	newNode model: anEntity.
+	newNode shape: aShape.
+	newNode setAnnouncer: announcer.
+	self root addNode: newNode.
+	newNode ].
+self resetDefaults.
+^ nodes
+\end{lstlisting}
+
+
 
 %This blueprint helps us to find identity behavior, for example in \figref{MessageCentricLayout} we can see all sent messages in an execution, the root message or event message is the responsible of invoking all other messages(A).  Note that there are 5 sub-tree structure like, but only 3 of them are painted with colors red and yellow(B), because these sub-trees have identity behavior.
 
@@ -335,12 +353,13 @@ Classes are represented as red boxes and are positioned on the right hand side o
 Messages are located in a large matrix. A message $m$ is at a position $(i,o)$ where $t$ the index of the message in the trace and $o$ is the object that received $m$. Message \ct{m1} is the first message, received by \ct{O1}. Executing the method that corresponds to \ct{m1} sends the message \ct{m2} to one of the instance of \ct{C3}. 
 
 \ab{What is the order of the packages, objects and classes? Is the ordering reflects the order in the trace?}
+\jp{ the (package, class, object) are sorted vertically by number of messages that has been sent, in this sense the component that sends more messages are located above.}
 
 \paragraph{Interpretation}
 We see that \ct{m1} performs iterates over three instances of \ct{C3}. It then executes 4 times the same method on the object \ct{C2}. Each of these 4 calls  executes a method on an instance of \ct{C3}. 
 
 \ab{Are the message performed on O2 the same selector? If yes, how can I know this? Which selector is it?}
-
+\jp{ Yes,  TGWhell>>returnHashOf: ..., I will add an inspect option on messages.}
 
 %This layout distinguishes three types of components: classifiers, messages and edges (\figref{ObjectCentricLayout}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B), and the edges link pairs of messages where a message is related to the message from which it was invoked.
 %Classifiers are displayed as a composition. Note that in the \figref{Demo} the packages are composed by its classes and each class is composed by the objects that were instantiated from it (E).
@@ -350,8 +369,8 @@ We see that \ct{m1} performs iterates over three instances of \ct{C3}. It then e
 %
 %This blueprint shows how many objects are in the execution, the messages that they received and the interaction between objects through messages exchanged between them, in the order they occur.
 %
-%\paragraph{Interaction}
 %
+%\paragraph{Interaction}
 %Also we can press a right click in any message to inspect the method associated with the message.
 
 %============1
@@ -422,18 +441,18 @@ ExecutionMuralLayout>>messageHeight: message
 \end{lstlisting}
 
 After to defining the layout we need set it before open the visualization. 
-\begin{lstlisting}[language=Smalltalk]
-Chaski  profile:[
-	| view |
-	view := MOViewRenderer new.
-	view nodes: MOGraphElement withAllSubclasses.
-	view edgesFrom: #superclass.
-] inPackagesMatching: 'Mondrian-*'.
-Chaski layout: ExecutionMuralLayout new.
-Chaski open.
-\end{lstlisting}
+%\begin{lstlisting}[language=Smalltalk]
+%Chaski  profile:[
+%	| view |
+%	view := MOViewRenderer new.
+%	view nodes: MOGraphElement withAllSubclasses.
+%	view edgesFrom: #superclass.
+%] inPackagesMatching: 'Mondrian-*'.
+%Chaski layout: ExecutionMuralLayout new.
+%Chaski open.
+%\end{lstlisting}
 
-\ab{Why not:}
+%\ab{Why not:}
 \begin{lstlisting}[language=Smalltalk]
 ExecutionMuralLayout viewProfile:[
 	| view |
