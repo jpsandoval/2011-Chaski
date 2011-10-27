@@ -247,7 +247,7 @@ We address this problem by proposing a framework for \emph{execution blueprints}
 A blueprint is parametrized with a layout and a color map. The layout assigns to each message a physical position on the screen and the color map assigns a color against some properties of the message.
 
 All our experiments and implementation effort have been carried out in Pharo\footnote{\url{http://pharo-project.org}}, a Smalltalk-dialect programming language. 
-We designed and implemented Chaski, a framework for execution trace visualization. Chaski allows one to easily define a new blueprint with a customized layout and color map.
+We designed and implemented Chaski, a framework for execution trace visualization. Chaski allows one to easily define a new blueprint with a customized layout and color map. A 5 minutes screencast is available online on \url{http://tinyurl.com/executionBlueprint}.
 
 This paper is structured as follows. 
 \secref{executionBlueprints} presents two execution blueprints.
@@ -666,11 +666,13 @@ The \ct{copy} message is culprit of the \ct{A}, \ct{B}, \ct{C} pattern. Removing
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Conclusion and Future Work}\seclabel{conclusion}
 
-The execution blueprints are useful to help us to identify execution anomalies.
+The execution blueprints are \chg{useful to help us}{effective} to identify execution anomalies.
+\ins{One lesson we have learnt while developing the Chaski framework, is the difficulty to find visual representations that are both intuitive and scalable.}
+\del{The large-scale sequence of messages makes the screen resolution not enough to show a lot of information, causing the emergence of scrolls that make the graphics difficult to understand.} \chg{The scalability is a necessary improvement to manage a greater amount of profiled information}{Making our blueprints friendly against very large amount of data is a topic we still need to properly address}. %Also we want improve the cognitive capability on the visualization, defining and coloring execution patterns in ours blueprints.
 
-The large-scale sequence of messages makes the screen resolution not enough to show a lot of information, causing the emergence of scrolls that make the graphics difficult to understand. The scalability is a necessary improvement to manage a greater amount of profiled information. Also we want improve the cognitive capability on the visualization, defining and coloring execution patterns in ours blueprints.
+\chg{We present our framework Chaski that allow create execution blueprints in easy way. We want improve Chaski to monitoring the object's state in the execution to detect related anomalies, and adding options to apply colors and filters even after a blueprint was displayed}{Tracking down the cause and source of side effects is often a crucial piece of information. We plan to address this with dedicated blueprints.}
 
-We present our framework Chaski that allow create execution blueprints in easy way. We want improve Chaski to monitoring the object's state in the execution to detect related anomalies, and adding options to apply colors and filters even after a blueprint was displayed. 
+\ins{Currently, the large majority of code profilers and debuggers use the inadequate abstractions in their analysis. We believe this is a critical situation that we hope the tool and ideas presented in this paper will contribute to address.}
 
 %The main objective of Chaski is help to creates blueprints that (1) is able to cope with these huge amounts of data, and (2) does not confuse the viewer.
 %\paragraph{ Acknowledgment}
