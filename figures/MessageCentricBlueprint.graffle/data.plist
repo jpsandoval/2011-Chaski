@@ -216,7 +216,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{67.999939, 175.78125}, {12, 25}}</string>
+			<string>{{84.210693, 131.39062}, {12, 25}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -271,7 +271,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{30.999969, 175.78125}, {12, 25}}</string>
+			<string>{{66.382751, 177}, {12, 25}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -326,7 +326,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{39.117188, 150.78125}, {12, 25}}</string>
+			<string>{{29.765625, 177}, {12, 25}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -381,7 +381,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{84.875, 131.39062}, {12, 25}}</string>
+			<string>{{39.117188, 150.78125}, {12, 25}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -685,7 +685,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2011-10-23 23:18:17 +0000</string>
+	<string>2011-10-27 20:01:49 +0000</string>
 	<key>Modifier</key>
 	<string>Alexandre Bergel</string>
 	<key>NotesVisible</key>
