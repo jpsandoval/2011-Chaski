@@ -513,7 +513,7 @@ The following sections briefly describes how the execution blueprint helped us t
 
 %We get surprised with these result: Why 300 objects of MONode were created if "MOShape withAllSubclasses" only are 25 elements?. We search in the extend code and we could not find the reason. This simple anomalies brought us to follow many questions: Are 400 objects really needed? Where are used these objects? Are 12687 messages needed? Can we reduce the number of messages?.
 
-\subsection{Introducing a memoization cache}
+\subsection{Introducing a memoization cache}\seclabel{memoization}
 
 \largefig{}{1.0}{MessageCentricBlueprintMondrian}{Identifying method candidate for a memoization}
 
@@ -533,9 +533,6 @@ MOShape class>>defaultNodeShapeClass
 \end{lstlisting}
 
 A new trace of the same execution is now free of the \ct{B} pattern.
-
-\ab{@@HERE}
-
 
 %In this section we visualize the following instruction using Tree Layout (\figref{MessageCentricSample}):
 %\begin{lstlisting}[language=Smalltalk]
@@ -569,68 +566,85 @@ A new trace of the same execution is now free of the \ct{B} pattern.
 %\end{lstlisting}
 
 %=========
-\subsection{Using Sequence Layout}
+\subsection{Reducing unnecessary collection copy}
 
-\largefig{}{1.0}{ObjectCentricDemo}{Sequence Tree Layout}
-In this section we visualize the following instructions using Sequence Layout (\figref{}):
-\begin{lstlisting}[language=Smalltalk]
-|view|
-view := MOViewRenderer new.
-view nodes: AbstractBlueprint withAllSubclasses.
-ObjectCentricBlueprint profileView: [
-	view edgesFrom:#superclass.
-]  inPackagesMatching: 'Mondrian-*'.
-\end{lstlisting}
+\largefig{}{1.0}{ObjectCentricBlueprintMondrian}{Sequence Tree Layout}
 
-In this section we will examine \figref{ObjectCentricDemo}. The first execution anomaly that we can found is in the section (A), where there are some objects that receive only one message in the execution. The following code correspond to these messages.
+\figref{ObjectCentricBlueprintMondrian} shows the object-centric blueprint for the execution of Mondrian. Several patterns are easily identifiable. The one indicated by \ct{A}, \ct{B} and \ct{C} are particularly interesting for our case. A group of objects, marked with \ct{O}, receive exactly one message, the ones marked with \ct{A}, \ct{B} and \ct{C}. It is curious that the objects \ct{O} receive just one message without sending any.
 
-\begin{lstlisting}[language=Smalltalk]
+Two methods are involved in this visual patterns: \ct{allNodesDo:} and \ct{nodesDo:}. This information is accessible via tool tip. Right clicking on a message gives access to the source code:
+
+\begin{lstlisting}[]
 MOGraphElement>>allNodesDo: aBlock
 	"Evaluate aBlock all its children."
-	self copy nodesDo: [ :each |
+	self <b>copy</b> nodesDo: [ :each |
 		aBlock value: each.
 		each allNodesDo: aBlock ]
 \end{lstlisting} 
 
-This is a wierd code, because "self copy" do a shadow copy of the receiver node, and call to nodesDo: selector.
+The \ct{copy} message is culprit of the \ct{A}, \ct{B}, \ct{C} pattern. Removing this call suppress this unnecessary calls. When totaling with the memorization (\secref{memoization}), the amount of created nodes is down to 25, which is optimal for our profiled scenario.
 
-\begin{lstlisting}[language=Smalltalk]
-MONode>>nodesDo: aBlock
-	"Iterates over all the subnodes of the receiver."	
-	nodes ifNil: [ ^ self ].
-	nodes do: aBlock
-\end{lstlisting} 
+%\ab{@@HERE}
 
-And this do something with the original subnodes, this is possible to see in the visualization, but the copy nodes do nothing after that because nobody save it's reference. This is clearly an issue  and it is consuming memory needlessly.
-
-For the first execution anomaly, we refactor the ``allNodesDo:'' method: 
-\begin{lstlisting}[language=Smalltalk]
-MOGraphElement>>allNodesDo: aBlock
-	"Evaluate aBlock all its children."
-	self nodesDo: [ :each |
-		aBlock value: each.
-		each allNodesDo: aBlock ]
-\end{lstlisting} 
-
-\begin{center}
-   \begin{tabular}{|l||ccr|} \hline
-	Class & Instances & Messages \\
-	MOMorphPainterVisitor & 1 & 51	\\
-	MORectangleShape & 2 & 1602	\\
-	MOStraightLineShape & 1 & 296	\\
-	MOTreeLayout & 1 & 536	\\
-	ConcreteShapeVisitor & 49 & 98 \\
-	MONode & 25 & 5693\\
-	MOElementShapeProperties & 10 & 91\\
-	MOViewRenderer & 1 & 292\\
-	MOEdge & 24 & 3442\\
-	MORoot & 1 & 548\\
-	MOBrowser & 1 & 11\\
-	MOCanvas & 1 & 9\\
-	MOAnnouncer & 3 & 24\\
-	Total & 120 & 12696 \\
-   \end{tabular}
-\end{center}
+%In this section we visualize the following instructions using Sequence Layout (\figref{}):
+%\begin{lstlisting}[language=Smalltalk]
+%|view|
+%view := MOViewRenderer new.
+%view nodes: AbstractBlueprint withAllSubclasses.
+%ObjectCentricBlueprint profileView: [
+%	view edgesFrom:#superclass.
+%]  inPackagesMatching: 'Mondrian-*'.
+%\end{lstlisting}
+%
+%In this section we will examine \figref{ObjectCentricDemo}. The first execution anomaly that we can found is in the section (A), where there are some objects that receive only one message in the execution. The following code correspond to these messages.
+%
+%\begin{lstlisting}[language=Smalltalk]
+%MOGraphElement>>allNodesDo: aBlock
+%	"Evaluate aBlock all its children."
+%	self copy nodesDo: [ :each |
+%		aBlock value: each.
+%		each allNodesDo: aBlock ]
+%\end{lstlisting} 
+%
+%This is a wierd code, because "self copy" do a shadow copy of the receiver node, and call to nodesDo: selector.
+%
+%\begin{lstlisting}[language=Smalltalk]
+%MONode>>nodesDo: aBlock
+%	"Iterates over all the subnodes of the receiver."	
+%	nodes ifNil: [ ^ self ].
+%	nodes do: aBlock
+%\end{lstlisting} 
+%
+%And this do something with the original subnodes, this is possible to see in the visualization, but the copy nodes do nothing after that because nobody save it's reference. This is clearly an issue  and it is consuming memory needlessly.
+%
+%For the first execution anomaly, we refactor the ``allNodesDo:'' method: 
+%\begin{lstlisting}[language=Smalltalk]
+%MOGraphElement>>allNodesDo: aBlock
+%	"Evaluate aBlock all its children."
+%	self nodesDo: [ :each |
+%		aBlock value: each.
+%		each allNodesDo: aBlock ]
+%\end{lstlisting} 
+%
+%\begin{center}
+%   \begin{tabular}{|l||ccr|} \hline
+%	Class & Instances & Messages \\
+%	MOMorphPainterVisitor & 1 & 51	\\
+%	MORectangleShape & 2 & 1602	\\
+%	MOStraightLineShape & 1 & 296	\\
+%	MOTreeLayout & 1 & 536	\\
+%	ConcreteShapeVisitor & 49 & 98 \\
+%	MONode & 25 & 5693\\
+%	MOElementShapeProperties & 10 & 91\\
+%	MOViewRenderer & 1 & 292\\
+%	MOEdge & 24 & 3442\\
+%	MORoot & 1 & 548\\
+%	MOBrowser & 1 & 11\\
+%	MOCanvas & 1 & 9\\
+%	MOAnnouncer & 3 & 24\\
+%	Total & 120 & 12696 \\
+%   \end{tabular}
+%\end{center}
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
