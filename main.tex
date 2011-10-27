@@ -649,8 +649,7 @@ The \ct{copy} message is culprit of the \ct{A}, \ct{B}, \ct{C} pattern. Removing
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 %\section{Discussion}\seclabel{discussion}
-%The large-scale sequence of messages makes the screen resolution not enough to show a lot of information,causing the emergence of scrolls that make the graphics difficult to understand. 
-
+%
 %Group the messages only by class and packages reduce the height of a visualization. However the big number of messages remains a problem.
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -667,14 +666,13 @@ The \ct{copy} message is culprit of the \ct{A}, \ct{B}, \ct{C} pattern. Removing
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Conclusion and Future Work}\seclabel{conclusion}
 
-In this paper we present two execution blueprints, with emphasizes in message sent and interactions between objects. 
+The execution blueprints are useful to help us to identify execution anomalies.
 
-Our blueprints offer intuitive execution representations, useful to identify abnormal execution.  And with Chaski is easy define a new execution blueprint.
+The large-scale sequence of messages makes the screen resolution not enough to show a lot of information, causing the emergence of scrolls that make the graphics difficult to understand. The scalability is a necessary improvement to manage a greater amount of profiled information. Also we want improve the cognitive capability on the visualization, defining and coloring execution patterns in ours blueprints.
 
-Design an effective trace visualization that (1) is able to cope with these huge amounts of data, and (2) does not confuse the viewer, remains a challenge.
+We present our framework Chaski that allow create execution blueprints in easy way. We want improve Chaski to monitoring the object's state in the execution to detect related anomalies, and adding options to apply colors and filters even after a blueprint was displayed. 
 
-In the future we plan extend this approach to create more execution blueprints, considering: state related operation (intercept accesses to object state), and execution patterns. This last to improve the cognitive capability on the visualization.
-
+%The main objective of Chaski is help to creates blueprints that (1) is able to cope with these huge amounts of data, and (2) does not confuse the viewer.
 %\paragraph{ Acknowledgment}
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
