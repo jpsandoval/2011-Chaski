@@ -1,0 +1,69 @@
+\begin{thebibliography}{10}
+
+\bibitem{Corn08a}
+Bas Cornelissen, Andy Zaidman, Danny Holten, Leon Moonen, Arie van Deursen, and
+  Jarke~J. van Wijk.
+\newblock Execution trace analysis through massive sequence and circular bundle
+  views.
+\newblock {\em J. Syst. Softw.}, 81:2252--2268, December 2008.
+
+\bibitem{Pauw98a}
+Wim De~Pauw, David Lorenz, John Vlissides, and Mark Wegman.
+\newblock Execution patterns in object-oriented visualization.
+\newblock In {\em Proceedings of Conference on Object-Oriented Technologies and
+  Systems (COOTS'98)}, pages 219--234. USENIX, 1998.
+
+\bibitem{Deel07a}
+P.~Deelen, F.~van Ham, Cornells Huizing, and H.~van~de Watering.
+\newblock Visualization of dynamic program aspects.
+\newblock In {\em Proceedings of VISSOFT'07}, pages 39--46, 2007.
+
+\bibitem{Holt06b}
+D.~Holten.
+\newblock Hierarchical edge bundles: Visualization of adjacency relations in
+  hierarchical data.
+\newblock {\em Visualization and Computer Graphics, IEEE Transactions on},
+  12(5):741--748, September 2006.
+
+\bibitem{Jerd98a}
+Dean~F. Jerding and John~T. Stasko.
+\newblock The information mural: A technique for displaying and navigating
+  large information spaces.
+\newblock {\em IEEE Transactions on Visualization and Computer Graphics},
+  4:257--271, July 1998.
+
+\bibitem{Kuhn06c}
+Adrian Kuhn and Orla Greevy.
+\newblock Exploiting the analogy between traces and signal processing.
+\newblock In {\em Proceedings of ICSM'06}, pages 320--329, 2006.
+
+\bibitem{Lanz03d}
+Michele Lanza and St\'ephane Ducasse.
+\newblock Polymetric views---a lightweight visual approach to reverse
+  engineering.
+\newblock {\em TSE}, 29(9):782--795,
+  September 2003.
+
+\bibitem{Male02a}
+Jonathan~I. Maletic, Andrian Marcus, and Michael Collard.
+\newblock A task oriented view of software visualization.
+\newblock In {\em Proceedings of VISSOFT'02}, pages 32--40. IEEE, June 2002.
+
+\bibitem{Maoz11a}
+Shahar Maoz and David Harel.
+\newblock On tracing reactive systems.
+\newblock {\em Softw. Syst. Model.}, 10:447--468, October 2011.
+
+\bibitem{Reis07a}
+Steven~P. Reiss.
+\newblock Visual representations of executing programs.
+\newblock {\em J. Vis. Lang. Comput.}, 18:126--148, April 2007.
+
+\bibitem{Zaid05a}
+A.~Zaidman, T.~Calders, S.~Demeyer, and J.~Paredaens.
+\newblock Applying webmining techniques to execution traces to support the
+  program comprehension process.
+\newblock In {\em Proceedings of CSMR'05}, pages 134--142, 2005.
+  Computer Society Press.
+
+\end{thebibliography}

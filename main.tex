@@ -2,7 +2,9 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %\documentclass[runningheads]{llncs}
 %\documentclass[10pt,letterpaper,twocolumn]{article}
-\documentclass{sig-alternate}
+%\documentclass{sig-alternate}
+\documentclass[10pt, conference, compsocconf]{IEEEtran}
+
 
 
 % packages
@@ -194,7 +196,7 @@ Department of Computer Science (DCC)\\ University of Chile, Santiago, Chile\\[1 
 
 \maketitle
 
-\emph{This paper makes use of colored figures. Though colors are not mandatory for full understanding, we recommend  the use of a colored printout.}
+%\emph{This paper makes use of colored figures. Though colors are not mandatory for full understanding, we recommend  the use of a colored printout.}
 
 %We currently know little about the execution of software in general. Most of the tools we use to construct software focus on static abstractions (class and method definitions) instead of message sending. Little options are offered to developers to fully understand how objects interact. 
 %As a consequence, developers have to resort to ad-hoc solutions to identify redundant computation, excessive memory consumption and odd interactions. 
@@ -280,7 +282,7 @@ We proposes two execution blueprints, a \emph{message-centric blueprint} that em
 
 A blueprint represents messages and objects as small colored boxes. Edges between two boxes represents the sequence between messages. As discussed below, the differences between the two blueprints is essentially based on the color map and the layout.
 
-We illustrate the blueprint on contrived but representative examples. \secref{caseStudy} will study their applications on a large case study.
+%We illustrate the blueprint on contrived but representative examples. \secref{caseStudy} will study their applications on a large case study.
 
 %\subsection{Chaski objectives}
 %
@@ -679,6 +681,7 @@ Currently, the large majority of code profilers and debuggers use the inadequate
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \bibliographystyle{plain}
+\tiny
 \bibliography{scg}
 
 \end{document}
