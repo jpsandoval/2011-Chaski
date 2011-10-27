@@ -358,7 +358,7 @@ Messages are located in a large matrix. A message $m$ is at a position $(i,o)$ w
 Packages, classes and objects are vertically sorted along the number of messages they have sent. A component that sends more messages than its siblings is located above. For example, the object \ct{O1} receives the message \ct{m1}, itself sending 7 messages. It is therefore placed at the top of the blueprint. 
 
 \paragraph{Interpretation}
-We see that \ct{m1} performs iterates over three instances of \ct{C3}. It then executes 4 times the same method on the object \ct{C2}. Each of these 4 calls  executes a method on an instance of \ct{C3}. \ab{say more here}
+We see that \ct{m1} performs iterates over three instances of \ct{C3}. It then executes 4 times the same method on the object \ct{C2}. Each of these 4 calls  executes a method on an instance of \ct{C3}.
 
 
 %This layout distinguishes three types of components: classifiers, messages and edges (\figref{ObjectCentricLayout}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B), and the edges link pairs of messages where a message is related to the message from which it was invoked.
@@ -666,14 +666,13 @@ The \ct{copy} message is culprit of the \ct{A}, \ct{B}, \ct{C} pattern. Removing
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Conclusion and Future Work}\seclabel{conclusion}
 
-The execution blueprints are \chg{useful to help us}{effective} to identify execution anomalies.
-\ins{One lesson we have learnt while developing the Chaski framework, is the difficulty to find visual representations that are both intuitive and scalable.}
-\del{The large-scale sequence of messages makes the screen resolution not enough to show a lot of information, causing the emergence of scrolls that make the graphics difficult to understand.} \chg{The scalability is a necessary improvement to manage a greater amount of profiled information}{Making our blueprints friendly against very large amount of data is a topic we still need to properly address}. %Also we want improve the cognitive capability on the visualization, defining and coloring execution patterns in ours blueprints.
+The execution blueprints are effective to identify execution anomalies. One lesson we have learnt while developing the Chaski framework, is the difficulty to find visual representations that are both intuitive and scalable. Making our blueprints friendly against very large amount of data is a topic we still need to properly address.
 
-\chg{We present our framework Chaski that allow create execution blueprints in easy way. We want improve Chaski to monitoring the object's state in the execution to detect related anomalies, and adding options to apply colors and filters even after a blueprint was displayed}{Tracking down the cause and source of side effects is often a crucial piece of information. We plan to address this with dedicated blueprints.}
+%Also we want improve the cognitive capability on the visualization, defining and coloring execution patterns in ours blueprints.
 
-\ins{Currently, the large majority of code profilers and debuggers use the inadequate abstractions in their analysis. We believe this is a critical situation that we hope the tool and ideas presented in this paper will contribute to address.}
+Tracking down the cause and source of side effects is often a crucial piece of information. We plan to address this with dedicated blueprints.
 
+Currently, the large majority of code profilers and debuggers use the inadequate abstractions in their analysis. We believe this is a critical situation that we hope the tool and ideas presented in this paper will contribute to address.
 
 %The main objective of Chaski is help to creates blueprints that (1) is able to cope with these huge amounts of data, and (2) does not confuse the viewer.
 %\paragraph{ Acknowledgment}
