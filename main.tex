@@ -207,12 +207,12 @@ Department of Computer Science (DCC)\\ University of Chile, Santiago, Chile\\[1 
 %	What's the consequence?
 
 %Understanding the behavior of software is an essential task of the software life cycle, especially when performance monitoring activities have to be maintained.
-Traditional code profilers and debuggers for object-oriented programming languages essentially consider a software as a bunch of classes and methods, defined in textual files. These abstractions poorly match with what a computation is made of: objects sending and receiving messages. A sever consequence is that developers often turn to ad-hoc solutions to identify redundant computation, excessive memory consumption and odd object interactions.  %understand better the execution.
+Traditional code profilers and debuggers for object-oriented programming languages essentially consider a software as a bunch of classes and methods, defined in textual files. These abstractions poorly match with what a computation is made of: objects sending and receiving messages. A severe consequence is that developers often turn to ad-hoc solutions to identify redundant computation, excessive memory consumption and odd object interactions.  %understand better the execution.
 
-We propose \emph{execution blueprints} to visually identify execution patterns. Our blueprints offer intuitive execution representations, useful to identify abnormal execution.
+We propose \emph{execution blueprints} to visually identify execution patterns. Our blueprints offer intuitive execution representations, useful to identify abnormal execution. We used polymetric views~\cite{Lanz03d} as the visual representation for our blueprint.  
 Adequate combinations of layouts and coloring reveals certain execution anomalies and performances issues.
 
-Thanks to our framework Chaski, we were able to find a number of serious defect in applications written in the Pharo programming language.
+Thanks to our framework Chaski, we were able to find a number of serious defect in an application written in the Pharo programming language.
 
 %Our goal is to show a visualization that represents the interaction of objects involved in the execution which can help developers gain a better understanding of the software execution. The large number of objects involved in execution represents a major challenge.
 %
@@ -244,14 +244,16 @@ Consider circular bundle view proposed by Cornelissen \etal~\cite{Corn08a}. Stru
 
 We address this problem by proposing a framework for \emph{execution blueprints}, a blueprint being a tailored visual trace representation. An execution blueprint aims at identifying problematic execution patterns. From a given execution trace of an object-oriented application, an execution blueprint visualizes the exchanged messages and the object involved in the profiled computation.
 
-A blueprint is parametrized with a layout and a color map. The layout assigns to each message a physical position on the screen and the color map assigns a color against some property of the message.
+A blueprint is parametrized with a layout and a color map. The layout assigns to each message a physical position on the screen and the color map assigns a color against some properties of the message.
 
-All our experiments and implementation have been carried out in Pharo\footnote{\url{http://pharo-project.org}}, a Smalltalk-dialect programming language. 
+All our experiments and implementation effort have been carried out in Pharo\footnote{\url{http://pharo-project.org}}, a Smalltalk-dialect programming language. 
 We designed and implemented Chaski, a framework for execution trace visualization. Chaski allows one to easily define a new blueprint with a customized layout and color map.
 
 This paper is structured as follows. 
-\secref{executionBlueprints} presents two execution blueprints
+\secref{executionBlueprints} presents two execution blueprints.
+\secref{framework} briefly illustrates an instantiation of the Chaski framework.
 \secref{caseStudy} employs the blueprints to identify execution anomalies in an application large of 200 classes.
+\secref{conclusion} concludes and sketches our future work.
 
 
 %The use of highly reflective dynamic languages can make seemingly simple questions(how 2 or more packages interact? What kinds are dependent to a certain class? When exactly this method is invoked?)difficult to answer if we just analyze the source code, documentation or any other appliance design.
@@ -274,7 +276,7 @@ This paper is structured as follows.
 %
 %A computation in an object-oriented language is exercised with objects interacting by sending messages to themselves. 
 
-We proposes two execution blueprints, a \emph{message-centric blueprint} that emphasizes on the messages sent between objects and an \emph{object-centric blueprint} to represents the interactions between objects.
+We proposes two execution blueprints, a \emph{message-centric blueprint} that emphasizes on the messages sent between objects and an \emph{object-centric blueprint} to focus on the objects instead.
 
 A blueprint represents messages and objects as small colored boxes. Edges between two boxes represents the sequence between messages. As discussed below, the differences between the two blueprints is essentially based on the color map and the layout.
 
@@ -297,12 +299,12 @@ We illustrate the blueprint on contrived but representative examples. \secref{ca
 
 The message-centric blueprint renders messages as boxes and execution sequence as edges. \figref{MessageCentricBlueprint} depicts a blueprint obtained from a program execution. The blueprint is structured as a tree layout: a message directly sends its message children in a sequential fashion. 
 
-The root Message 1 is the first message sent. The execution of the method associated to this message sends Message 2. The ordering of the sequence is deep-first. We numbered the ordering of the message for the first 8 messages. 
+The root Message 1 is the first message sent by the profiled code. The execution of the method associated to this message sends Message 2. The ordering of the sequence is deep-first. We numbered the ordering of the message for the first 8 messages. 
 
 All the messages are colored in grey in the initial rendering. Messages get colored by mouse clicking on a particular one. 
 Coloring allows for a comparison of messages. The programmer has clicked on Message 2, which is indicated with a red border on \figref{MessageCentricBlueprint}. 
 
-Clicking on a node triggers a structure pattern matching to identify similar execution. The message structure below Message 2 is searched over the complete trace. Two instances of this structure is found, indicated with \ct{A} and \ct{B}.
+Clicking on a node triggers a structure pattern helps identify identify similar executions. The message structure below Message 2 is searched over the complete trace. Two instances of this structure is found, indicated with \ct{A} and \ct{B}.
 
 Differences between the matched structures is indicated with yellow and red. A yellow message indicates that the sibling nodes in the matched structures have a different receiver. For example, the objects that receives Messages 2, A and B are different instances of the same class. A red message indicates that the sibling messages were executed on the same object. This is the case of Message 4, and the two red messages below \ct{A} and \ct{B}. 
 
@@ -310,7 +312,7 @@ Differences between the matched structures is indicated with yellow and red. A y
 %Colors help us to find identity behavior \ab{What is an identify behavior?}. To find identity behavior we only need to select a sequence of messages (sub-tree) and automatically all identity sequence of messages (sub-tree) are colored with red and yellow. The colors are set with the following criteria: the red boxes are messages that: i) they have the same selector ii) they are received by the same object; and the yellow boxes are messages that: i) they have the same selector ii) the receivers of these messages are instances of the same class.
 
 \paragraph{Interpretation}
-The computation invokes the same messages on 3 different objects. The interesting point here is the presence of the red nodes, which are 3 messages sent to the same objects. Identifying that an object receive several time the same messages may indicate a candidate for inserting a memoization. 
+The computation invokes the same messages on 3 different objects. The interesting point here is the presence of the red nodes, which are 3 messages sent to the same group of objects. Identifying that a particular object receives several time the same messages may indicate a candidate for inserting a memoization. 
 
 %\ab{What is the code of the method invoked with Message 1?}
 %\jp{the method is :}
@@ -348,15 +350,15 @@ The computation invokes the same messages on 3 different objects. The interestin
 \paragraph{Description}
 The object-centric execution blueprint describes the interaction occurring between objects. It renders objects and the messages they received as small colored boxes (\figref{ObjectCentricBlueprint}). The blueprint is composed of two parts.
 
-The left hand side presents the structure of the analyzed software. The packages involved in the trace are blue boxes (only one package is represented on the figure). 
+The left-hand side presents the structure of the analyzed software. The packages involved in the trace are blue boxes (only one package is represented on the figure). 
 Classes are represented as red boxes and are positioned on the right hand side of the package in which they are defined. Three classes, \ct{C1}, \ct{C2}, \ct{C3}, are involved in the trace. Objects, represented as yellow boxes, are located at the right-hand side of the class for which they are instances of. \ct{C1} and \ct{C2} have only one instance each, \ct{O1} and \ct{O2}, respectively. The class \ct{C3} has five instances.
 
-Messages are located in a large matrix. A message $m$ is at a position $(i,o)$ where $t$ the index of the message in the trace and $o$ is the object that received $m$. Message \ct{m1} is the first message, received by \ct{O1}. Executing the method that corresponds to \ct{m1} sends the message \ct{m2} to one of the instance of \ct{C3}. 
+Messages are located in a large matrix. A message $m$ is at a position $(i,o)$ where $i$ the index of the message in the trace and $o$ is the object that received $m$. Message \ct{m1} is the first message, received by \ct{O1}. Executing the method that corresponds to \ct{m1} sends the message \ct{m2} to one of the instance of \ct{C3}. 
 
-Packages, classes and objects are vertically sorted along the number of messages they have sent. A component that sends more messages than its sibling is located above.
+Packages, classes and objects are vertically sorted along the number of messages they have sent. A component that sends more messages than its siblings is located above. For example, the object \ct{O1} receives the message \ct{m1}, itself sending 7 messages. It is therefore placed at the top of the blueprint. 
 
 \paragraph{Interpretation}
-We see that \ct{m1} performs iterates over three instances of \ct{C3}. It then executes 4 times the same method on the object \ct{C2}. Each of these 4 calls  executes a method on an instance of \ct{C3}. 
+We see that \ct{m1} performs iterates over three instances of \ct{C3}. It then executes 4 times the same method on the object \ct{C2}. Each of these 4 calls  executes a method on an instance of \ct{C3}. \ab{say more here}
 
 
 %This layout distinguishes three types of components: classifiers, messages and edges (\figref{ObjectCentricLayout}). The classifiers are displayed as blue, red and yellow boxes that represent a package, class and object respectively(A). The gray boxes represent messages(B), and the edges link pairs of messages where a message is related to the message from which it was invoked.
@@ -382,8 +384,7 @@ Chaski offers a small domain-specific language to customize the visualization. A
 
 \fig{}{0.5}{ExecutionMuralDemo}{Execution Mural}
 
-The Execution Mural visualization shows time on the horizontal axis and messages passed between classes in a program on the vertical~\figref{ExecutionMuralDemo}. This take the approach of creating
- a general view showing all the classes and messages. Where the classes are on vertical axis, and each message is a vertical line of 1 pixel wide from source to destination class.
+The Execution Mural visualization shows time on the horizontal axis and messages passed between classes in a program on the vertical (\figref{ExecutionMuralDemo}). The classes are on the vertical axis, and each message is a vertical line wide of 1 pixel from the source to the destination class.
 
 The blueprint requires about 30 lines of Pharo code. First, the abstract class \ct{AbstractBlueprint} has to be subclassed:
 
@@ -464,7 +465,7 @@ Italic portion corresponds to an example.
 
 We used the execution blueprint to analyze Mondrian, an agile visualization engine. Mondrian is actually used to render the trace visualization. We used Chaski and Mondrian to visualize execution traces of Mondrian.
 
-Mondrian renders an arbitrary domain by constructing a node for each domain element and draw edges to indicate relations between two domain elements. We identified two deficiencies in the execution of Mondrian. 
+Mondrian renders an arbitrary domain by constructing a node for each domain element and draw edges to indicate relations between two domain elements. Thanks to our blueprints, we identified two deficiencies in Mondrian. 
 
 %In this section we show how Chaski visualizations help to improve the performance of Mondrian.
 %For this we use this Mondrian script as an example:
@@ -503,45 +504,71 @@ Mondrian renders an arbitrary domain by constructing a node for each domain elem
 
 \subsection{Execution deficiency}
 
-We noticed that it was consuming an abnormal amount of memory. This was perceived with excessing garbage collections. In Pharo the garbage collector operates by ``stopping the world'', making the application run slower than what is ought do. \ab{@@HERE}
+We noticed that Mondrian was consuming an excessive amount of memory. This was perceived from frequent triggers of the garbage collector. In Pharo the garbage collector operates by ``stopping the world'', making the application run slower than expected.
 
-We get surprised with these result: Why 300 objects of MONode were created if "MOShape withAllSubclasses" only are 25 elements?. We search in the extend code and we could not find the reason. This simple anomalies brought us to follow many questions: Are 400 objects really needed? Where are used these objects? Are 12687 messages needed? Can we reduce the number of messages?.
-
-\subsection{Using Tree Layout}
-
-\largefig{}{1.0}{MessageCentricSample}{Mondrian Tree Layout}
-
-In this section we visualize the following instruction using Tree Layout (\figref{MessageCentricSample}):
-\begin{lstlisting}[language=Smalltalk]
-MessageCentricBlueprint profileView: [
-	|view|
-	view := MOViewRenderer new.
-	view nodes: AbstractBlueprint withAllSubclasses.
-] inPackagesMatching: 'Mondrian-*'.
-\end{lstlisting}
+By running our execution blueprint, we identified that 300 instances of the class \ct{MONode} were produced, whereas the visualization was showing only 25. The problem we now face is threefold:  understand why many more objects were created, identify unnecessary objects and remove their creation if possible.
+The following sections briefly describes how the execution blueprint helped us to solve this performance issue.
 
 
-In this context we can analyze the red message:
-\begin{lstlisting}[language=Smalltalk]
+
+%We get surprised with these result: Why 300 objects of MONode were created if "MOShape withAllSubclasses" only are 25 elements?. We search in the extend code and we could not find the reason. This simple anomalies brought us to follow many questions: Are 400 objects really needed? Where are used these objects? Are 12687 messages needed? Can we reduce the number of messages?.
+
+\subsection{Introducing a memoization cache}
+
+\largefig{}{1.0}{MessageCentricBlueprintMondrian}{Identifying method candidate for a memoization}
+
+\figref{MessageCentricBlueprintMondrian} shows a message-centric blueprint for our execution of Mondrian. We see that two groups of messages that we qualify as ``flying saucers''~\cite{Lanz03d}, marked with \ct{A} and \ct{B}. This represents an iteration on a collection. 
+
+Clicking on Message \ct{defaultNodeShapeClass} highlights the \ct{B} structure: all the red nodes indicates that exactly the same messages have been sent to the very same objects. Whereas the visualization does not indicate whether a side effect is occurring, inspecting the source code of the method \ct{defaultNodeShapeClass} clearly indicates that a memoization would reduce the amount of created objects. We augmented the definition of the method with the \textbf{bolded} code:
+
+\begin{lstlisting}[]
 MOShape class>>defaultNodeShapeClass
-"Return the default node shape class"
-| classes |
-classes := (self allSubclasses select: #isDefaultNodeShape).
-classes ifEmpty: [ self error: 'No default shape class' ].
-^ classes anyOne
+	"Return the default node shape class"
+	| classes |
+	<b>DefaultNodeShapeClass 
+		ifNotNil: [ ^ DefaultNodeShapeClass ].</b>
+	classes := (self allSubclasses select: #isDefaultNodeShape).
+	classes ifEmpty: [ self error: 'No default shape class' ].
+	^ <b>DefaultNodeShapeClass := </b>classes anyOne.
 \end{lstlisting}
 
-This code clearly does a search twice during the execution, and the search is independent of the context because this method doesn't receive parameters and also doesn't use an instance variable. Clearly this is a method we can improve using cache.
-\begin{lstlisting}[language=Smalltalk]
-MOShape class>>defaultNodeShapeClass
-"Return the default node shape class"
-| classes |
-DefaultNodeShapeClass ifNotNil: [ ^ DefaultNodeShapeClass ].
-classes := (self allSubclasses select: #isDefaultNodeShape).
-classes ifEmpty: [ self error: 'No default shape class' ].
-^ DefaultNodeShapeClass := classes anyOne.
-\end{lstlisting}
+A new trace of the same execution is now free of the \ct{B} pattern.
 
+\ab{@@HERE}
+
+
+%In this section we visualize the following instruction using Tree Layout (\figref{MessageCentricSample}):
+%\begin{lstlisting}[language=Smalltalk]
+%MessageCentricBlueprint profileView: [
+%	|view|
+%	view := MOViewRenderer new.
+%	view nodes: AbstractBlueprint withAllSubclasses.
+%] inPackagesMatching: 'Mondrian-*'.
+%\end{lstlisting}
+%
+%
+%In this context we can analyze the red message:
+%\begin{lstlisting}[language=Smalltalk]
+%MOShape class>>defaultNodeShapeClass
+%"Return the default node shape class"
+%| classes |
+%classes := (self allSubclasses select: #isDefaultNodeShape).
+%classes ifEmpty: [ self error: 'No default shape class' ].
+%^ classes anyOne
+%\end{lstlisting}
+%
+%This code clearly does a search twice during the execution, and the search is independent of the context because this method doesn't receive parameters and also doesn't use an instance variable. Clearly this is a method we can improve using cache.
+%\begin{lstlisting}[language=Smalltalk]
+%MOShape class>>defaultNodeShapeClass
+%"Return the default node shape class"
+%| classes |
+%DefaultNodeShapeClass ifNotNil: [ ^ DefaultNodeShapeClass ].
+%classes := (self allSubclasses select: #isDefaultNodeShape).
+%classes ifEmpty: [ self error: 'No default shape class' ].
+%^ DefaultNodeShapeClass := classes anyOne.
+%\end{lstlisting}
+
+%=========
 \subsection{Using Sequence Layout}
 
 \largefig{}{1.0}{ObjectCentricDemo}{Sequence Tree Layout}
@@ -605,20 +632,29 @@ MOGraphElement>>allNodesDo: aBlock
    \end{tabular}
 \end{center}
 
-\section{Discussion}\seclabel{discussion}
-The large-scale sequence of messages makes the screen resolution not enough to show a lot of information,causing the emergence of scrolls that make the graphics difficult to understand. 
+%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+%\section{Discussion}\seclabel{discussion}
+%The large-scale sequence of messages makes the screen resolution not enough to show a lot of information,causing the emergence of scrolls that make the graphics difficult to understand. 
+
 %Group the messages only by class and packages reduce the height of a visualization. However the big number of messages remains a problem.
 
-\section{Related work}\seclabel{relatedwork}
-
-Research into trace visualization has resulted in various techniques and tools.
-
-\paragraph{Execution pattern}~\cite{Pauw98a}
-
-Execution trace visualization
-~\cite{Maoz11a}
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{Conclusion}\seclabel{conclusion}
+
+%\section{Related work}\seclabel{relatedwork}
+%
+%Research into trace visualization has resulted in various techniques and tools.
+%
+%\paragraph{Execution pattern}~\cite{Pauw98a}
+%
+%Execution trace visualization
+%~\cite{Maoz11a}
+
+%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+\section{Conclusion and Future Work}\seclabel{conclusion}
+
+
 
 %\paragraph{Acknowledgment}
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
